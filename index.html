@@ -8,16 +8,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        @media print {
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen">
 
     <div class="max-w-4xl mx-auto p-4 sm:p-6">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+        <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4 no-print">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-emerald-400">CalcuPlan Pro</h1>
-                <p class="text-xs text-slate-400">Control Metabólico, Planificación Automática y Diario</p>
+                <p class="text-xs text-slate-400">Control Metabólico, Planificación Automática y Reportes PDF</p>
             </div>
             <div class="text-right">
                 <span id="current-date" class="text-xs font-medium text-slate-400"></span>
@@ -25,11 +30,12 @@
         </header>
 
         <!-- Navegación por pestañas -->
-        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2">
-            <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE, Metas & Macros</button>
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2 no-print">
+            <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE & Macros</button>
             <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Inteligente</button>
             <button onclick="switchTab('menu')" id="tab-menu" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">3. Diario Nutricional</button>
             <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base & Restricciones</button>
+            <button onclick="switchTab('reporte')" id="tab-reporte" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">5. Reporte & PDF</button>
         </div>
 
         <!-- SECCIÓN 1: TDEE, METAS, MACROS Y MICROS -->
@@ -123,7 +129,6 @@
                         </div>
                     </div>
 
-                    <!-- Micronutrientes e Hidratación -->
                     <div class="border-t border-slate-700/60 pt-4 mt-4 space-y-2">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">💧 Guía de Hidratación y Micronutrientes Esenciales</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
@@ -145,7 +150,7 @@
         <section id="section-planificador" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
                 <h2 class="text-lg font-semibold mb-3 text-emerald-400">Configuración del Plan Alimentario</h2>
-                <p class="text-xs text-slate-400 mb-4">El generador distribuirá exactamente tus calorías objetivo en las porciones de cada comida.</p>
+                <p class="text-xs text-slate-400 mb-4">El generador inteligente diseña menús factibles y equilibrados para cada ingesta.</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div>
@@ -182,12 +187,12 @@
                         <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="generarMenuAutomatico()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente Escalonado</button>
+                        <button onclick="generarMenuFactible()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente Realista</button>
                     </div>
                 </div>
 
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-                    <span class="text-slate-400">Calorías estimadas por ingesta:</span>
+                    <span class="text-slate-400">Calorías exactas por ingesta:</span>
                     <span id="info-porcion-comida" class="font-bold text-emerald-400">-</span>
                 </div>
             </div>
@@ -197,7 +202,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl gap-3">
                     <div>
                         <h3 class="text-sm font-bold text-emerald-300">Menú Sugerido y Balanceado</h3>
-                        <p class="text-xs text-slate-400">Modifica los gramos de cualquier alimento: los totales por comida y del día se recalculan al instante.</p>
+                        <p class="text-xs text-slate-400">Modifica los gramos o porciones en tiempo real: los totales se recalculan automáticamente.</p>
                     </div>
                     <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition w-full sm:w-auto">📥 Cargar Menú al Diario</button>
                 </div>
@@ -314,6 +319,50 @@
                 </div>
             </div>
         </section>
+
+        <!-- SECCIÓN 5: REPORTE Y DESCARGA EN PDF -->
+        <section id="section-reporte" class="hidden space-y-6">
+            <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 gap-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-emerald-400">Reporte Nutricional Profesional</h2>
+                        <p class="text-xs text-slate-400">Vista previa del plan alimentario optimizado para exportar o imprimir en PDF.</p>
+                    </div>
+                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-3 rounded-lg transition shadow-lg flex items-center gap-2">
+                        🖨️ Descargar / Imprimir Menú en PDF
+                    </button>
+                </div>
+
+                <!-- Cabecera del Reporte para PDF -->
+                <div id="reporte-contenido" class="space-y-4 text-xs">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div>
+                            <span class="text-slate-400 block">Meta Diaria:</span>
+                            <span id="rep-meta-kcal" class="font-bold text-emerald-400 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Peso Referencia:</span>
+                            <span id="rep-peso" class="font-bold text-slate-200 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Fecha Emisión:</span>
+                            <span id="rep-fecha" class="font-bold text-slate-200 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Profesional:</span>
+                            <span class="font-bold text-emerald-400 text-sm">Lic. Patricio Cora</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-200 mb-2">Plan Semanal / Diario Estructurado:</h3>
+                        <div id="rep-lista-menu" class="space-y-3">
+                            <p class="text-slate-500">Primero genera un menú en la pestaña "2. Plan & Menú Inteligente".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
@@ -325,16 +374,16 @@
             { nombre: "Filet de Merluza", kcal: 82, prot: 17.5, carb: 0, gras: 1.2, categoria: "proteina" },
             { nombre: "Atún en lata al agua", kcal: 105, prot: 24, carb: 0, gras: 1, categoria: "proteina" },
             { nombre: "Huevo Entero (unidad ~50g)", kcal: 72, prot: 6.3, carb: 0.4, gras: 4.8, categoria: "proteina" },
-            // Lácteos y Derivados
+            // Lácteos y Desayuno
             { nombre: "Queso Cremoso Light (Port Salut)", kcal: 215, prot: 25, carb: 1, gras: 12, categoria: "lacteo" },
             { nombre: "Queso Untable Descremado", kcal: 105, prot: 10, carb: 4, gras: 5, categoria: "lacteo" },
             { nombre: "Leche Descremada", kcal: 36, prot: 3.2, carb: 5, gras: 0.1, categoria: "lacteo" },
             { nombre: "Yogur Descremado Saborizado", kcal: 48, prot: 4.2, carb: 7.5, gras: 0.1, categoria: "lacteo" },
-            // Carbohidratos y Harinas
+            { nombre: "Pan Lactal Integral / Salvado", kcal: 245, prot: 9, carb: 42, gras: 3.5, categoria: "desayuno" },
+            { nombre: "Avena Arrollada", kcal: 367, prot: 13, carb: 66, gras: 7, categoria: "desayuno" },
+            // Carbohidratos Almuerzo/Cena
             { nombre: "Arroz Blanco (Cocido)", kcal: 130, prot: 2.7, carb: 28, gras: 0.3, categoria: "carbo" },
             { nombre: "Fideos de Sémola (Cocidos)", kcal: 138, prot: 4.5, carb: 25, gras: 1.1, categoria: "carbo" },
-            { nombre: "Avena Arrollada", kcal: 367, prot: 13, carb: 66, gras: 7, categoria: "carbo" },
-            { nombre: "Pan Lactal Integral / Salvado", kcal: 245, prot: 9, carb: 42, gras: 3.5, categoria: "carbo" },
             { nombre: "Papa (Hervida / Al horno)", kcal: 87, prot: 1.9, carb: 20, gras: 0.1, categoria: "carbo" },
             { nombre: "Batata (Hervida / Al horno)", kcal: 86, prot: 1.6, carb: 20, gras: 0.1, categoria: "carbo" },
             { nombre: "Lentejas (Cocidas)", kcal: 116, prot: 9, carb: 20, gras: 0.4, categoria: "carbo" },
@@ -357,12 +406,13 @@
         let pesoGlobal = parseFloat(localStorage.getItem('calcuplan_peso')) || 75;
         let menuGeneradoCache = [];
 
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const fechaStr = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('current-date').innerText = fechaStr;
         document.getElementById('meta-kcal').innerText = metaCaloriasGlobal;
         document.getElementById('plan-meta-kcal').value = metaCaloriasGlobal;
 
         function switchTab(tab) {
-            ['calculadora', 'planificador', 'menu', 'alimentos'].forEach(t => {
+            ['calculadora', 'planificador', 'menu', 'alimentos', 'reporte'].forEach(t => {
                 document.getElementById(`section-${t}`).classList.add('hidden');
                 document.getElementById(`tab-${t}`).className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition";
             });
@@ -370,6 +420,7 @@
             document.getElementById(`tab-${tab}`).className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition";
             
             if(tab === 'planificador') actualizarPlanificador();
+            if(tab === 'reporte') actualizarReporteUI();
         }
 
         function calcularTDEE() {
@@ -415,7 +466,6 @@
             if (objetivo === 'deficit') kcalObjetivo = Math.round(metaCaloriasGlobal * 0.80);
             else if (objetivo === 'volumen') kcalObjetivo = Math.round(metaCaloriasGlobal * 1.15);
 
-            // Distribución basada en el objetivo
             let pProt = 0.30, pCarb = 0.45, pGras = 0.25;
             if (objetivo === 'deficit') { pProt = 0.35; pCarb = 0.40; pGras = 0.25; }
             else if (objetivo === 'volumen') { pProt = 0.25; pCarb = 0.55; pGras = 0.20; }
@@ -424,22 +474,17 @@
             const kcalCarb = kcalObjetivo * pCarb;
             const kcalGras = kcalObjetivo * pGras;
 
-            const gProt = Math.round(kcalProt / 4);
-            const gCarb = Math.round(kcalCarb / 4);
-            const gGras = Math.round(kcalGras / 9);
-
-            document.getElementById('macro-prot-gramos').innerText = `${gProt} g`;
+            document.getElementById('macro-prot-gramos').innerText = `${Math.round(kcalProt / 4)} g`;
             document.getElementById('macro-prot-kcal').innerText = `(${Math.round(pProt * 100)}% - ${Math.round(kcalProt)} kcal)`;
 
-            document.getElementById('macro-carb-gramos').innerText = `${gCarb} g`;
+            document.getElementById('macro-carb-gramos').innerText = `${Math.round(kcalCarb / 4)} g`;
             document.getElementById('macro-carb-kcal').innerText = `(${Math.round(pCarb * 100)}% - ${Math.round(kcalCarb)} kcal)`;
 
-            document.getElementById('macro-gras-gramos').innerText = `${gGras} g`;
+            document.getElementById('macro-gras-gramos').innerText = `${Math.round(kcalGras / 9)} g`;
             document.getElementById('macro-gras-kcal').innerText = `(${Math.round(pGras * 100)}% - ${Math.round(kcalGras)} kcal)`;
 
-            // Agua estimada (~35 ml por kg de peso)
             const aguaLitros = (pesoGlobal * 0.035).toFixed(1);
-            document.getElementById('info-agua').innerText = `Consumo hídrico mínimo recomendado: ~${aguaLitros} a ${(parseFloat(aguaLitros)+0.5).toFixed(1)} litros diarios (aumentar en días de alta exigencia física/futsal).`;
+            document.getElementById('info-agua').innerText = `Consumo hídrico mínimo recomendado: ~${aguaLitros} a ${(parseFloat(aguaLitros)+0.5).toFixed(1)} litros diarios.`;
         }
 
         function actualizarMetaPorObjetivo() {
@@ -459,7 +504,7 @@
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const kcalPorComida = Math.round(metaKcal / numComidas);
 
-            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas (Total diario: ${metaKcal} kcal).`;
+            document.getElementById('info-porcion-comida').innerText = `Exactamente ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas (Total diario: ${metaKcal} kcal).`;
 
             const contenedor = document.getElementById('contenedor-sugeridos');
             contenedor.innerHTML = '';
@@ -484,7 +529,7 @@
             });
         }
 
-        function generarMenuAutomatico() {
+        function generarMenuFactible() {
             const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const tipoDieta = document.getElementById('plan-tipo-dieta').value;
@@ -496,45 +541,66 @@
                 aptos = aptos.filter(i => i.categoria !== 'carbo' || i.nombre.toLowerCase().includes('lentejas'));
             }
 
-            if (aptos.length === 0) {
-                alert("No hay suficientes alimentos aptos con los filtros actuales.");
-                return;
-            }
-
-            const proteinas = aptos.filter(i => i.prot >= 10);
-            const carbos = aptos.filter(i => i.carb >= 15);
-            const vegetales = aptos.filter(i => i.categoria === 'vegetal' || i.kcal < 50);
+            const desayunoPool = aptos.filter(i => i.categoria === 'desayuno' || i.categoria === 'lacteo' || i.categoria === 'fruta');
+            const proteinaPool = aptos.filter(i => i.categoria === 'proteina');
+            const carboPool = aptos.filter(i => i.categoria === 'carbo');
+            const vegetalPool = aptos.filter(i => i.categoria === 'vegetal');
 
             const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
             menuGeneradoCache = [];
-
-            // Calorías objetivo por comida
             const kcalPorComida = metaKcal / numComidas;
 
             for (let i = 0; i < numComidas; i++) {
                 let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
                 let itemsComida = [];
+                let acumuladoKcal = 0;
 
-                // Distribuir calorías dentro de la comida: ~55% proteína, ~30% carbohidrato, ~15% vegetal
-                let targetKcalProt = kcalPorComida * 0.55;
-                let protItem = proteinas.length > 0 ? proteinas[Math.floor(Math.random() * proteinas.length)] : aptos[0];
-                let cantProt = Math.round((targetKcalProt / protItem.kcal) * 100);
-                if (cantProt < 30) cantProt = 30;
-                itemsComida.push({ alimento: protItem, cantidad: cantProt });
+                // Criterio factible: Desayuno/Merienda usa lácteos/pan/avena/fruta. Almuerzo/Cena usa proteína + carbo + vegetal.
+                const esDesayunoMerienda = (nombreComida.includes("Desayuno") || nombreComida.includes("Merienda") || nombreComida.includes("Media"));
 
-                // Carbohidrato en almuerzo/cena o si la dieta no es lowcarb estricta
-                if ((i === 2 || i === 4 || numComidas <= 4) && tipoDieta !== 'lowcarb' && carbos.length > 0) {
-                    let targetKcalCarb = kcalPorComida * 0.30;
-                    let carbItem = carbos[Math.floor(Math.random() * carbos.length)];
-                    let cantCarb = Math.round((targetKcalCarb / carbItem.kcal) * 100);
-                    if (cantCarb < 30) cantCarb = 30;
-                    itemsComida.push({ alimento: carbItem, cantidad: cantCarb });
-                }
+                if (esDesayunoMerienda && desayunoPool.length > 0) {
+                    // Seleccionar 2 ítems lógicos (ej: Pan o Avena + Lácteo o Fruta)
+                    let item1 = desayunoPool[Math.floor(Math.random() * desayunoPool.length)];
+                    let item2 = desayunoPool.filter(x => x.nombre !== item1.nombre);
+                    item2 = item2.length > 0 ? item2[Math.floor(Math.random() * item2.length)] : item1;
 
-                // Vegetal para volumen y saciedad
-                if (vegetales.length > 0 && i !== 0) {
-                    let vegItem = vegetales[Math.floor(Math.random() * vegetales.length)];
-                    itemsComida.push({ alimento: vegItem, cantidad: 120 });
+                    // Distribuir calorías 50/50 o 60/40
+                    let target1 = kcalPorComida * 0.55;
+                    let target2 = kcalPorComida * 0.45;
+
+                    let cant1 = Math.round((target1 / item1.kcal) * 100);
+                    let cant2 = Math.round((target2 / item2.kcal) * 100);
+                    if(cant1 < 20) cant1 = 30;
+                    if(cant2 < 20) cant2 = 30;
+
+                    itemsComida.push({ alimento: item1, cantidad: cant1 });
+                    itemsComida.push({ alimento: item2, cantidad: cant2 });
+                } else {
+                    // Almuerzo / Cena / Colación fuerte: Proteína + Carbo + Vegetal
+                    let protItem = proteinaPool.length > 0 ? proteinaPool[Math.floor(Math.random() * proteinaPool.length)] : aptos[0];
+                    let targetProtKcal = kcalPorComida * 0.45;
+                    let cantProt = Math.round((targetProtKcal / protItem.kcal) * 100);
+                    if(cantProt < 50) cantProt = 100;
+                    itemsComida.push({ alimento: protItem, cantidad: cantProt });
+                    acumuladoKcal += (protItem.kcal * (cantProt / 100));
+
+                    let remanente = kcalPorComida - acumuladoKcal;
+                    if (remanente > 50 && tipoDieta !== 'lowcarb' && carboPool.length > 0) {
+                        let carbItem = carboPool[Math.floor(Math.random() * carboPool.length)];
+                        let targetCarbKcal = remanente * 0.70;
+                        let cantCarb = Math.round((targetCarbKcal / carbItem.kcal) * 100);
+                        if(cantCarb < 40) cantCarb = 60;
+                        itemsComida.push({ alimento: carbItem, cantidad: cantCarb });
+                        acumuladoKcal += (carbItem.kcal * (cantCarb / 100));
+                    }
+
+                    let remanenteVeg = kcalPorComida - acumuladoKcal;
+                    if (remanenteVeg > 10 && vegetalPool.length > 0) {
+                        let vegItem = vegetalPool[Math.floor(Math.random() * vegetalPool.length)];
+                        let cantVeg = Math.round((remanenteVeg / vegItem.kcal) * 100);
+                        if(cantVeg < 50) cantVeg = 100;
+                        itemsComida.push({ alimento: vegItem, cantidad: cantVeg });
+                    }
                 }
 
                 menuGeneradoCache.push({
@@ -578,7 +644,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-emerald-400 tracking-wide uppercase text-[11px]">📌 ${bloque.comida}</span>
-                        <span class="text-slate-400 font-semibold">Total Ingesta: <span id="plato-kcal-${bIndex}" class="text-slate-200">${totalKcalPlato}</span> kcal</span>
+                        <span class="text-slate-400 font-semibold">Total Ingesta: <span class="text-slate-200">${totalKcalPlato}</span> kcal</span>
                     </div>
                     <div class="space-y-1">${htmlItems}</div>
                 `;
@@ -618,6 +684,43 @@
             renderDiario();
             alert("¡Menú inteligente cargado con éxito a tu Diario Nutricional!");
             switchTab('menu');
+        }
+
+        function actualizarReporteUI() {
+            document.getElementById('rep-meta-kcal').innerText = `${metaCaloriasGlobal} kcal`;
+            document.getElementById('rep-peso').innerText = `${pesoGlobal} kg`;
+            document.getElementById('rep-fecha').innerText = fechaStr;
+
+            const contenedor = document.getElementById('rep-lista-menu');
+            contenedor.innerHTML = '';
+
+            if (menuGeneradoCache.length === 0) {
+                contenedor.innerHTML = `<p class="text-slate-500 italic">No hay un menú generado actualmente. Ve a la pestaña "2. Plan & Menú Inteligente" y haz clic en "Generar Menú".</p>`;
+                return;
+            }
+
+            menuGeneradoCache.forEach(bloque => {
+                let div = document.createElement('div');
+                div.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2";
+                
+                let htmlItems = '';
+                let totalPlato = 0;
+                bloque.items.forEach(it => {
+                    let factor = it.cantidad / 100;
+                    let kcal = Math.round(it.alimento.kcal * factor);
+                    totalPlato += kcal;
+                    htmlItems += `<div class="flex justify-between text-slate-300 py-0.5 border-b border-slate-800/40"><span>• ${it.alimento.nombre} (${it.cantidad}g)</span><span class="font-bold text-emerald-400">${kcal} kcal</span></div>`;
+                });
+
+                div.innerHTML = `
+                    <div class="flex justify-between font-bold text-emerald-300 border-b border-slate-700 pb-1">
+                        <span>${bloque.comida}</span>
+                        <span>Total: ${totalPlato} kcal</span>
+                    </div>
+                    <div class="space-y-1">${htmlItems}</div>
+                `;
+                contenedor.appendChild(div);
+            });
         }
 
         function actualizarSelectAlimentos() {
