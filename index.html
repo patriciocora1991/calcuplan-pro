@@ -171,7 +171,7 @@
                         <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificadorInfo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="generarMenuSemanalInteligente()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Semanal Completo (Lunes a Domingo)</button>
+                        <button onclick="generarMenuSemanalInteligente()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Semanal Inteligente (Lunes a Domingo)</button>
                     </div>
                 </div>
 
@@ -537,57 +537,87 @@
                 return;
             }
 
-            const desayunoPool = aptos.filter(i => i.categoria === 'desayuno' || i.categoria === 'lacteo' || i.categoria === 'fruta');
-            const proteinaPool = aptos.filter(i => i.categoria === 'proteina');
-            const carboPool = aptos.filter(i => i.categoria === 'carbo');
-            const vegetalPool = aptos.filter(i => i.categoria === 'vegetal');
+            // Bancos de alimentos para asegurar combinaciones gastronómicas 100% lógicas y apetitosas
+            const poolPan = aptos.filter(i => i.nombre.toLowerCase().includes("pan"));
+            const poolLacteo = aptos.filter(i => i.categoria === 'lacteo');
+            const poolFruta = aptos.filter(i => i.categoria === 'fruta');
+            const poolAvena = aptos.filter(i => i.nombre.toLowerCase().includes("avena"));
+            
+            const poolCarnes = aptos.filter(i => i.categoria === 'proteina' && !i.nombre.toLowerCase().includes("huevo") && !i.nombre.toLowerCase().includes("queso"));
+            const poolHuevos = aptos.filter(i => i.nombre.toLowerCase().includes("huevo"));
+            const poolCarbo = aptos.filter(i => i.categoria === 'carbo');
+            const poolVegetal = aptos.filter(i => i.categoria === 'vegetal');
+            const poolGrasa = aptos.filter(i => i.categoria === 'grasa');
 
             const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
             menuSemanalCache = [];
             const kcalPorComida = metaKcal / numComidas;
 
-            diasSemana.forEach(dia => {
+            diasSemana.forEach((dia, dIndex) => {
                 let comisionesDia = [];
                 for (let i = 0; i < numComidas; i++) {
                     let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
                     let itemsComida = [];
-                    let acumuladoKcal = 0;
                     const esDesayunoMerienda = (nombreComida.includes("Desayuno") || nombreComida.includes("Merienda") || nombreComida.includes("Media"));
 
-                    if (esDesayunoMerienda && desayunoPool.length > 0) {
-                        let item1 = desayunoPool[Math.floor(Math.random() * desayunoPool.length)];
-                        let item2 = desayunoPool.filter(x => x.nombre !== item1.nombre);
-                        item2 = item2.length > 0 ? item2[Math.floor(Math.random() * item2.length)] : item1;
-
-                        let cant1 = Math.round(((kcalPorComida * 0.55) / item1.kcal) * 100);
-                        let cant2 = Math.round(((kcalPorComida * 0.45) / item2.kcal) * 100);
-                        if(cant1 < 25) cant1 = 40;
-                        if(cant2 < 25) cant2 = 40;
-
-                        itemsComida.push({ alimento: item1.nombre, cantidad: cant1 });
-                        itemsComida.push({ alimento: item2.nombre, cantidad: cant2 });
+                    if (esDesayunoMerienda) {
+                        let tipoDesayuno = (dIndex + i) % 3;
+                        if (tipoDesayuno === 0 && poolPan.length > 0 && poolLacteo.length > 0) {
+                            let pan = poolPan[0];
+                            let untable = poolLacteo.find(l => l.nombre.toLowerCase().includes("untable") || l.nombre.toLowerCase().includes("queso")) || poolLacteo[0];
+                            itemsComida.push({ alimento: pan.nombre, cantidad: 70 });
+                            itemsComida.push({ alimento: untable.nombre, cantidad: 40 });
+                            if (poolFruta.length > 0) {
+                                let fruta = poolFruta[Math.floor(Math.random() * poolFruta.length)];
+                                itemsComida.push({ alimento: fruta.nombre, cantidad: 120 });
+                            }
+                        } else if (tipoDesayuno === 1 && poolAvena.length > 0 && poolLacteo.length > 0) {
+                            let avena = poolAvena[0];
+                            let leche = poolLacteo.find(l => l.nombre.toLowerCase().includes("leche") || l.nombre.toLowerCase().includes("yogur")) || poolLacteo[0];
+                            itemsComida.push({ alimento: avena.nombre, cantidad: 50 });
+                            itemsComida.push({ alimento: leche.nombre, cantidad: 200 });
+                            if (poolFruta.length > 0) {
+                                let fruta = poolFruta[Math.floor(Math.random() * poolFruta.length)];
+                                itemsComida.push({ alimento: fruta.nombre, cantidad: 100 });
+                            }
+                        } else {
+                            if (poolHuevos.length > 0 && poolPan.length > 0) {
+                                let huevo = poolHuevos[0];
+                                let pan = poolPan[0];
+                                itemsComida.push({ alimento: pan.nombre, cantidad: 60 });
+                                itemsComida.push({ alimento: huevo.nombre, cantidad: 100 }); // 2 unidades
+                            } else if (poolLacteo.length > 0 && poolFruta.length > 0) {
+                                let lacteo = poolLacteo[Math.floor(Math.random() * poolLacteo.length)];
+                                let fruta = poolFruta[Math.floor(Math.random() * poolFruta.length)];
+                                itemsComida.push({ alimento: lacteo.nombre, cantidad: 200 });
+                                itemsComida.push({ alimento: fruta.nombre, cantidad: 150 });
+                            } else {
+                                let itemGen = aptos[Math.floor(Math.random() * aptos.length)];
+                                itemsComida.push({ alimento: itemGen.nombre, cantidad: 100 });
+                            }
+                        }
                     } else {
-                        let protItem = proteinaPool.length > 0 ? proteinaPool[Math.floor(Math.random() * proteinaPool.length)] : aptos[0];
-                        let cantProt = Math.round(((kcalPorComida * 0.45) / protItem.kcal) * 100);
-                        if(cantProt < 50) cantProt = 120;
-                        itemsComida.push({ alimento: protItem.nombre, cantidad: cantProt });
-                        acumuladoKcal += (protItem.kcal * (cantProt / 100));
+                        // Almuerzo / Cena: Plato estructurado lógico (Proteína + Carbo + Vegetal)
+                        let proteinaElegida = poolCarnes.length > 0 ? poolCarnes[(dIndex + i) % poolCarnes.length] : aptos[0];
+                        let gramosProt = Math.round(((kcalPorComida * 0.45) / proteinaElegida.kcal) * 100);
+                        if(gramosProt < 100) gramosProt = 130;
+                        itemsComida.push({ alimento: proteinaElegida.nombre, cantidad: gramosProt });
 
-                        let remanente = kcalPorComida - acumuladoKcal;
-                        if (remanente > 50 && tipoDieta !== 'lowcarb' && carboPool.length > 0) {
-                            let carbItem = carboPool[Math.floor(Math.random() * carboPool.length)];
-                            let cantCarb = Math.round(((remanente * 0.70) / carbItem.kcal) * 100);
-                            if(cantCarb < 40) cantCarb = 80;
-                            itemsComida.push({ alimento: carbItem.nombre, cantidad: cantCarb });
-                            acumuladoKcal += (carbItem.kcal * (cantCarb / 100));
+                        if (tipoDieta !== 'lowcarb' && poolCarbo.length > 0) {
+                            let carboElegido = poolCarbo[(dIndex + i) % poolCarbo.length];
+                            let gramosCarbo = Math.round(((kcalPorComida * 0.35) / carboElegido.kcal) * 100);
+                            if(gramosCarbo < 80) gramosCarbo = 150;
+                            itemsComida.push({ alimento: carboElegido.nombre, cantidad: gramosCarbo });
                         }
 
-                        let remanenteVeg = kcalPorComida - acumuladoKcal;
-                        if (remanenteVeg > 10 && vegetalPool.length > 0) {
-                            let vegItem = vegetalPool[Math.floor(Math.random() * vegetalPool.length)];
-                            let cantVeg = Math.round((remanenteVeg / vegItem.kcal) * 100);
-                            if(cantVeg < 50) cantVeg = 100;
-                            itemsComida.push({ alimento: vegItem.nombre, cantidad: cantVeg });
+                        if (poolVegetal.length > 0) {
+                            let vegetalElegido = poolVegetal[(dIndex + i) % poolVegetal.length];
+                            itemsComida.push({ alimento: vegetalElegido.nombre, cantidad: 120 });
+                        }
+
+                        if (poolGrasa.length > 0 && Math.random() > 0.5) {
+                            let grasaElegida = poolGrasa[Math.floor(Math.random() * poolGrasa.length)];
+                            itemsComida.push({ alimento: grasaElegida.nombre, cantidad: 10 });
                         }
                     }
 
@@ -602,7 +632,7 @@
             localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
             diaActivoIndex = 0;
             renderMenuSemanalUI();
-            alert("¡Menú semanal de Lunes a Domingo generado con éxito!");
+            alert("¡Menú semanal inteligente optimizado con combinaciones lógicas generado con éxito!");
         }
 
         function renderMenuSemanalUI() {
@@ -637,7 +667,6 @@
                     let kcal = Math.round(objAlimento.kcal * factor);
                     totalKcalPlato += kcal;
 
-                    // Opciones de alimentos aptos para el selector de personalización
                     let opcionesSelect = '';
                     alimentos.filter(a => !restricciones.includes(a.nombre)).forEach(a => {
                         opcionesSelect += `<option value="${a.nombre}" ${a.nombre === it.alimento ? 'selected' : ''}>${a.nombre}</option>`;
