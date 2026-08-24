@@ -17,7 +17,7 @@
         <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-emerald-400">CalcuPlan Pro</h1>
-                <p class="text-xs text-slate-400">Control Metabólico, Planificación por Comidas y Restricciones</p>
+                <p class="text-xs text-slate-400">Control Metabólico, Planificación Automática y Diario</p>
             </div>
             <div class="text-right">
                 <span id="current-date" class="text-xs font-medium text-slate-400"></span>
@@ -27,7 +27,7 @@
         <!-- Navegación por pestañas -->
         <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2">
             <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE & Metas</button>
-            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan de Comidas</button>
+            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Automático</button>
             <button onclick="switchTab('menu')" id="tab-menu" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">3. Diario Nutricional</button>
             <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base & Restricciones</button>
         </div>
@@ -93,11 +93,11 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 2: PLANIFICADOR POR COMIDAS -->
+        <!-- SECCIÓN 2: PLANIFICADOR Y MENÚ AUTOMÁTICO -->
         <section id="section-planificador" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h2 class="text-lg font-semibold mb-3 text-emerald-400">Estrategia de Comidas Diarias</h2>
-                <p class="text-xs text-slate-400 mb-4">Define cuántas ingestas realizarás al día para fraccionar tus calorías y objetivos nutricionales de forma equilibrada.</p>
+                <h2 class="text-lg font-semibold mb-3 text-emerald-400">Estrategia y Generador de Menú</h2>
+                <p class="text-xs text-slate-400 mb-4">Define cuántas ingestas realizarás y genera automáticamente un esquema inteligente respetando tus restricciones.</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -115,16 +115,33 @@
                     </div>
                 </div>
                 
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 mb-4">
-                    <span class="text-xs text-slate-400 block mb-1">Distribución estimada por cada comida:</span>
-                    <span id="info-porcion-comida" class="text-sm font-bold text-emerald-400">-</span>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <span class="text-xs text-slate-400 block">Distribución objetivo por ingesta:</span>
+                        <span id="info-porcion-comida" class="text-sm font-bold text-emerald-400">-</span>
+                    </div>
+                    <button onclick="generarMenuAutomatico()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-3 rounded-xl transition shadow-lg">✨ Generar Esquema de Menú Automático</button>
                 </div>
             </div>
 
-            <!-- Sugerencias de Alimentos Filtrados por Restricciones -->
+            <!-- Contenedor del Menú Generado Automáticamente -->
+            <div id="contenedor-menu-auto" class="hidden space-y-4">
+                <div class="flex justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl">
+                    <div>
+                        <h3 class="text-sm font-bold text-emerald-300">Esquema Sugerido para tu Día</h3>
+                        <p class="text-xs text-slate-400">Puedes revisar las combinaciones o cargarlas directamente a tu diario.</p>
+                    </div>
+                    <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition">📥 Cargar este Menú a mi Diario</button>
+                </div>
+                <div id="lista-menu-auto" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Sugerencias de Alimentos Aptos -->
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Aptos para tu Plan (Excluyendo Restricciones)</h3>
-                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-2">
+                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Aptos Disponibles (Sin Restricciones)</h3>
+                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
@@ -170,7 +187,7 @@
                         </select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Seleccionar Alimento Aptos (por 100g)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Seleccionar Alimento Apto (por 100g)</label>
                         <select id="log-alimento" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"></select>
                     </div>
                     <div class="sm:col-span-2">
@@ -261,6 +278,7 @@
         let diario = JSON.parse(localStorage.getItem('calcuplan_diario')) || [];
         let restricciones = JSON.parse(localStorage.getItem('calcuplan_restricciones')) || [];
         let metaCaloriasGlobal = localStorage.getItem('calcuplan_meta') || 2000;
+        let menuGeneradoCache = [];
 
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         document.getElementById('meta-kcal').innerText = metaCaloriasGlobal;
@@ -313,16 +331,15 @@
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const kcalPorComida = Math.round(metaKcal / numComidas);
 
-            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} comidas diarias.`;
+            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} comidas.`;
 
-            // Renderizar alimentos aptos (no restringidos)
             const contenedor = document.getElementById('contenedor-sugeridos');
             contenedor.innerHTML = '';
             
             const alimentosAptos = alimentos.filter(item => !restricciones.includes(item.nombre));
             
             if(alimentosAptos.length === 0) {
-                contenedor.innerHTML = `<p class="text-xs text-slate-500">Todos los alimentos están restringidos o no hay disponibles.</p>`;
+                contenedor.innerHTML = `<p class="text-xs text-slate-500">Todos los alimentos están restringidos.</p>`;
                 return;
             }
 
@@ -344,6 +361,108 @@
             });
         }
 
+        function generarMenuAutomatico() {
+            const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
+            const aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
+
+            if (aptos.length === 0) {
+                alert("No hay alimentos aptos disponibles para generar el menú.");
+                return;
+            }
+
+            // Clasificación heurística básica para armar platos lógicos
+            const proteinas = aptos.filter(i => i.prot >= 12);
+            const carbos = aptos.filter(i => i.carb >= 15);
+            const vegetalesFrutas = aptos.filter(i => i.kcal < 60 || (i.carb < 15 && i.prot < 10));
+
+            const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
+            menuGeneradoCache = [];
+
+            for (let i = 0; i < numComidas; i++) {
+                let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
+                let itemsComida = [];
+
+                // Seleccionar proteína
+                let protItem = proteinas.length > 0 ? proteinas[Math.floor(Math.random() * proteinas.length)] : aptos[0];
+                let cantProt = protItem.nombre.includes("Huevo") ? 100 : 150; // 2 huevos o 150g carne/pollo
+                itemsComida.push({ alimento: protItem, cantidad: cantProt });
+
+                // Seleccionar carbohidrato o vegetal según el momento
+                if ((i === 2 || i === 4) && carbos.length > 0) { // Almuerzo o Cena con Carbohidrato
+                    let carbItem = carbos[Math.floor(Math.random() * carbos.length)];
+                    itemsComida.push({ alimento: carbItem, cantidad: 100 });
+                }
+
+                if (vegetalesFrutas.length > 0) {
+                    let vegItem = vegetalesFrutas[Math.floor(Math.random() * vegetalesFrutas.length)];
+                    itemsComida.push({ alimento: vegItem, cantidad: 120 });
+                }
+
+                menuGeneradoCache.push({
+                    comida: nombreComida,
+                    items: itemsComida
+                });
+            }
+
+            renderMenuAutomaticoUI();
+        }
+
+        function renderMenuAutomaticoUI() {
+            const contenedor = document.getElementById('contenedor-menu-auto');
+            const lista = document.getElementById('lista-menu-auto');
+            lista.innerHTML = '';
+
+            menuGeneradoCache.forEach(bloque => {
+                let card = document.createElement('div');
+                card.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs space-y-2";
+                
+                let htmlItems = '';
+                bloque.items.forEach(it => {
+                    let factor = it.cantidad / 100;
+                    let kcal = Math.round(it.alimento.kcal * factor);
+                    htmlItems += `
+                        <div class="flex justify-between items-center py-1 border-b border-slate-800/50">
+                            <span class="text-slate-300 font-medium">${it.alimento.nombre} <span class="text-slate-500">(${it.cantidad}g/ml)</span></span>
+                            <span class="text-emerald-400 font-bold">${kcal} kcal</span>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-emerald-400 tracking-wide uppercase text-[11px] mb-1">📌 ${bloque.comida}</div>
+                    <div class="space-y-1">${htmlItems}</div>
+                `;
+                lista.appendChild(card);
+            });
+
+            contenedor.classList.remove('hidden');
+        }
+
+        function cargarMenuAutoAlDiario() {
+            if (menuGeneradoCache.length === 0) return;
+
+            menuGeneradoCache.forEach(bloque => {
+                bloque.items.forEach(it => {
+                    let factor = it.cantidad / 100;
+                    const itemDiario = {
+                        momento: bloque.comida,
+                        nombre: it.alimento.nombre,
+                        cantidad: it.cantidad,
+                        kcal: Math.round(it.alimento.kcal * factor),
+                        prot: +(it.alimento.prot * factor).toFixed(1),
+                        carb: +(it.alimento.carb * factor).toFixed(1),
+                        gras: +(it.alimento.gras * factor).toFixed(1)
+                    };
+                    diario.push(itemDiario);
+                });
+            });
+
+            localStorage.setItem('calcuplan_diario', JSON.stringify(diario));
+            renderDiario();
+            alert("¡Esquema de menú cargado con éxito a tu Diario Nutricional!");
+            switchTab('menu');
+        }
+
         function actualizarSelectAlimentos() {
             const select = document.getElementById('log-alimento');
             select.innerHTML = '';
@@ -351,7 +470,7 @@
             
             alimentosAptos.forEach((item) => {
                 let opt = document.createElement('option');
-                opt.value = item.nombre; // guardamos por nombre para filtrar seguro
+                opt.value = item.nombre;
                 opt.text = `${item.nombre} (${item.kcal} kcal / 100g)`;
                 select.appendChild(opt);
             });
@@ -417,7 +536,7 @@
             const momento = document.getElementById('log-comida').value;
 
             if (!nombreAlimento || isNaN(cantidad) || cantidad <= 0) {
-                alert("Selecciona un alimento y una cantidad válida.");
+                alert("Selecciona un alimento y cantidad válida.");
                 return;
             }
 
