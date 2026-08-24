@@ -26,13 +26,13 @@
 
         <!-- Navegación por pestañas -->
         <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2">
-            <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE & Metas</button>
+            <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE, Metas & Macros</button>
             <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Inteligente</button>
             <button onclick="switchTab('menu')" id="tab-menu" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">3. Diario Nutricional</button>
             <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base & Restricciones</button>
         </div>
 
-        <!-- SECCIÓN 1: TDEE y METAS -->
+        <!-- SECCIÓN 1: TDEE, METAS, MACROS Y MICROS -->
         <section id="section-calculadora" class="space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
                 <h2 class="text-lg font-semibold mb-4 text-emerald-400">Calculadora de Gasto Energético (Mifflin-St Jeor)</h2>
@@ -67,27 +67,75 @@
                         </select>
                     </div>
                 </div>
-                <button onclick="calcularTDEE()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Calcular Mis Requerimientos</button>
+                <button onclick="calcularTDEE()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Calcular Requerimientos, Macros y Micros</button>
             </div>
 
-            <div id="resultado-tdee" class="hidden bg-emerald-950/40 border border-emerald-800/60 p-6 rounded-2xl">
-                <h3 class="text-md font-semibold text-emerald-300 mb-2">Tus Resultados Estimados:</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="block text-xs text-slate-400">Basal (BMR)</span>
-                        <span id="res-bmr" class="text-lg font-bold text-slate-100">-</span>
+            <!-- Resultados TDEE -->
+            <div id="resultado-tdee" class="hidden space-y-4">
+                <div class="bg-emerald-950/40 border border-emerald-800/60 p-6 rounded-2xl">
+                    <h3 class="text-md font-semibold text-emerald-300 mb-3">Tus Resultados Metabólicos:</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Basal (BMR)</span>
+                            <span id="res-bmr" class="text-lg font-bold text-slate-100">-</span>
+                        </div>
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Mantenimiento</span>
+                            <span id="res-tdee" class="text-lg font-bold text-emerald-400">-</span>
+                        </div>
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Definición (-20%)</span>
+                            <span id="res-deficit" class="text-lg font-bold text-amber-400">-</span>
+                        </div>
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                            <span class="block text-xs text-slate-400">Volumen (+15%)</span>
+                            <span id="res-volumen" class="text-lg font-bold text-blue-400">-</span>
+                        </div>
                     </div>
-                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="block text-xs text-slate-400">Mantenimiento (TDEE)</span>
-                        <span id="res-tdee" class="text-lg font-bold text-emerald-400">-</span>
+                </div>
+
+                <!-- Desglose de Macronutrientes y Micronutrientes por Objetivo -->
+                <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-md font-semibold text-emerald-400">Distribución de Macronutrientes Sugeridos</h3>
+                        <select id="select-objetivo-macros" onchange="actualizarDesgloseMacros()" class="bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-emerald-300 font-semibold">
+                            <option value="deficit">Objetivo: Definición</option>
+                            <option value="mantenimiento" selected>Objetivo: Mantenimiento</option>
+                            <option value="volumen">Objetivo: Volumen</option>
+                        </select>
                     </div>
-                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="block text-xs text-slate-400">Definición (-20%)</span>
-                        <span id="res-deficit" class="text-lg font-bold text-amber-400">-</span>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block mb-1">Proteínas (Alta prioridad)</span>
+                            <span id="macro-prot-gramos" class="text-xl font-bold text-blue-400">-</span>
+                            <span id="macro-prot-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block mb-1">Carbohidratos (Energía)</span>
+                            <span id="macro-carb-gramos" class="text-xl font-bold text-amber-400">-</span>
+                            <span id="macro-carb-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block mb-1">Grasas (Hormonal / Celular)</span>
+                            <span id="macro-gras-gramos" class="text-xl font-bold text-rose-400">-</span>
+                            <span id="macro-gras-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
+                        </div>
                     </div>
-                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="block text-xs text-slate-400">Volumen (+15%)</span>
-                        <span id="res-volumen" class="text-lg font-bold text-blue-400">-</span>
+
+                    <!-- Micronutrientes e Hidratación -->
+                    <div class="border-t border-slate-700/60 pt-4 mt-4 space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">💧 Guía de Hidratación y Micronutrientes Esenciales</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <span class="font-semibold text-emerald-400 block mb-0.5">Agua e Hidratación</span>
+                                <p id="info-agua" class="text-slate-400 text-[11px]">-</p>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <span class="font-semibold text-emerald-400 block mb-0.5">Electrolitos y Micronutrientes Clave</span>
+                                <p class="text-slate-400 text-[11px]">Sodio (magnesio/potasio) post-entreno, fibra alta (>25g/día vía vegetales de hoja verde y frutas) y omega-3.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,7 +145,7 @@
         <section id="section-planificador" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
                 <h2 class="text-lg font-semibold mb-3 text-emerald-400">Configuración del Plan Alimentario</h2>
-                <p class="text-xs text-slate-400 mb-4">Selecciona tu objetivo, el estilo de alimentación y el fraccionamiento de tus comidas.</p>
+                <p class="text-xs text-slate-400 mb-4">El generador distribuirá exactamente tus calorías objetivo en las porciones de cada comida.</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div>
@@ -134,22 +182,22 @@
                         <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="generarMenuAutomatico()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente</button>
+                        <button onclick="generarMenuAutomatico()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente Escalonado</button>
                     </div>
                 </div>
 
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-                    <span class="text-slate-400">Distribución estimada por comida:</span>
+                    <span class="text-slate-400">Calorías estimadas por ingesta:</span>
                     <span id="info-porcion-comida" class="font-bold text-emerald-400">-</span>
                 </div>
             </div>
 
-            <!-- Contenedor del Menú Generado (Con edición y balanceo automático) -->
+            <!-- Contenedor del Menú Generado -->
             <div id="contenedor-menu-auto" class="hidden space-y-4">
                 <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl gap-3">
                     <div>
                         <h3 class="text-sm font-bold text-emerald-300">Menú Sugerido y Balanceado</h3>
-                        <p class="text-xs text-slate-400">Modifica los gramos de cualquier alimento: los totales se recalculan automáticamente.</p>
+                        <p class="text-xs text-slate-400">Modifica los gramos de cualquier alimento: los totales por comida y del día se recalculan al instante.</p>
                     </div>
                     <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition w-full sm:w-auto">📥 Cargar Menú al Diario</button>
                 </div>
@@ -305,7 +353,8 @@
         let alimentos = JSON.parse(localStorage.getItem('calcuplan_alimentos')) || alimentosBaseArgentinos;
         let diario = JSON.parse(localStorage.getItem('calcuplan_diario')) || [];
         let restricciones = JSON.parse(localStorage.getItem('calcuplan_restricciones')) || [];
-        let metaCaloriasGlobal = localStorage.getItem('calcuplan_meta') || 2000;
+        let metaCaloriasGlobal = parseFloat(localStorage.getItem('calcuplan_meta')) || 2000;
+        let pesoGlobal = parseFloat(localStorage.getItem('calcuplan_peso')) || 75;
         let menuGeneradoCache = [];
 
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -335,6 +384,9 @@
                 return;
             }
 
+            pesoGlobal = peso;
+            localStorage.setItem('calcuplan_peso', pesoGlobal);
+
             let bmr = (10 * peso) + (6.25 * altura) - (5 * edad);
             bmr = (genero === 'masculino') ? bmr + 5 : bmr - 161;
 
@@ -351,14 +403,47 @@
             localStorage.setItem('calcuplan_meta', metaCaloriasGlobal);
             document.getElementById('meta-kcal').innerText = metaCaloriasGlobal;
             document.getElementById('plan-meta-kcal').value = metaCaloriasGlobal;
+            
             document.getElementById('resultado-tdee').classList.remove('hidden');
+            actualizarDesgloseMacros();
+        }
+
+        function actualizarDesgloseMacros() {
+            const objetivo = document.getElementById('select-objetivo-macros').value;
+            let kcalObjetivo = metaCaloriasGlobal;
+
+            if (objetivo === 'deficit') kcalObjetivo = Math.round(metaCaloriasGlobal * 0.80);
+            else if (objetivo === 'volumen') kcalObjetivo = Math.round(metaCaloriasGlobal * 1.15);
+
+            // Distribución basada en el objetivo
+            let pProt = 0.30, pCarb = 0.45, pGras = 0.25;
+            if (objetivo === 'deficit') { pProt = 0.35; pCarb = 0.40; pGras = 0.25; }
+            else if (objetivo === 'volumen') { pProt = 0.25; pCarb = 0.55; pGras = 0.20; }
+
+            const kcalProt = kcalObjetivo * pProt;
+            const kcalCarb = kcalObjetivo * pCarb;
+            const kcalGras = kcalObjetivo * pGras;
+
+            const gProt = Math.round(kcalProt / 4);
+            const gCarb = Math.round(kcalCarb / 4);
+            const gGras = Math.round(kcalGras / 9);
+
+            document.getElementById('macro-prot-gramos').innerText = `${gProt} g`;
+            document.getElementById('macro-prot-kcal').innerText = `(${Math.round(pProt * 100)}% - ${Math.round(kcalProt)} kcal)`;
+
+            document.getElementById('macro-carb-gramos').innerText = `${gCarb} g`;
+            document.getElementById('macro-carb-kcal').innerText = `(${Math.round(pCarb * 100)}% - ${Math.round(kcalCarb)} kcal)`;
+
+            document.getElementById('macro-gras-gramos').innerText = `${gGras} g`;
+            document.getElementById('macro-gras-kcal').innerText = `(${Math.round(pGras * 100)}% - ${Math.round(kcalGras)} kcal)`;
+
+            // Agua estimada (~35 ml por kg de peso)
+            const aguaLitros = (pesoGlobal * 0.035).toFixed(1);
+            document.getElementById('info-agua').innerText = `Consumo hídrico mínimo recomendado: ~${aguaLitros} a ${(parseFloat(aguaLitros)+0.5).toFixed(1)} litros diarios (aumentar en días de alta exigencia física/futsal).`;
         }
 
         function actualizarMetaPorObjetivo() {
             const objetivo = document.getElementById('plan-objetivo').value;
-            let base = parseFloat(document.getElementById('plan-meta-kcal').value) || metaCaloriasGlobal;
-            
-            // Si el usuario ya calculó su TDEE, usémoslo como referencia base aproximada
             if(objetivo === 'deficit') {
                 document.getElementById('plan-meta-kcal').value = Math.round(metaCaloriasGlobal * 0.80);
             } else if(objetivo === 'mantenimiento') {
@@ -374,7 +459,7 @@
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const kcalPorComida = Math.round(metaKcal / numComidas);
 
-            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas.`;
+            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas (Total diario: ${metaKcal} kcal).`;
 
             const contenedor = document.getElementById('contenedor-sugeridos');
             contenedor.innerHTML = '';
@@ -401,16 +486,14 @@
 
         function generarMenuAutomatico() {
             const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
+            const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const tipoDieta = document.getElementById('plan-tipo-dieta').value;
             let aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
 
-            // Filtros según tipo de alimentación
             if (tipoDieta === 'vegetariana') {
                 aptos = aptos.filter(i => !i.nombre.toLowerCase().includes("pollo") && !i.nombre.toLowerCase().includes("vacuno") && !i.nombre.toLowerCase().includes("merluza") && !i.nombre.toLowerCase().includes("atún"));
             } else if (tipoDieta === 'lowcarb') {
                 aptos = aptos.filter(i => i.categoria !== 'carbo' || i.nombre.toLowerCase().includes('lentejas'));
-            } else if (tipoDieta === 'altaenproteinas') {
-                // Prioriza alimentos con buena proteína
             }
 
             if (aptos.length === 0) {
@@ -425,22 +508,30 @@
             const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
             menuGeneradoCache = [];
 
+            // Calorías objetivo por comida
+            const kcalPorComida = metaKcal / numComidas;
+
             for (let i = 0; i < numComidas; i++) {
                 let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
                 let itemsComida = [];
 
-                // Asignar proteína principal
+                // Distribuir calorías dentro de la comida: ~55% proteína, ~30% carbohidrato, ~15% vegetal
+                let targetKcalProt = kcalPorComida * 0.55;
                 let protItem = proteinas.length > 0 ? proteinas[Math.floor(Math.random() * proteinas.length)] : aptos[0];
-                let cantProt = protItem.nombre.includes("Huevo") ? 100 : (protItem.nombre.includes("Avena") ? 60 : 130);
+                let cantProt = Math.round((targetKcalProt / protItem.kcal) * 100);
+                if (cantProt < 30) cantProt = 30;
                 itemsComida.push({ alimento: protItem, cantidad: cantProt });
 
-                // Asignar carbohidrato en almuerzo/cena si no es strict lowcarb
-                if ((i === 2 || i === 4) && tipoDieta !== 'lowcarb' && carbos.length > 0) {
+                // Carbohidrato en almuerzo/cena o si la dieta no es lowcarb estricta
+                if ((i === 2 || i === 4 || numComidas <= 4) && tipoDieta !== 'lowcarb' && carbos.length > 0) {
+                    let targetKcalCarb = kcalPorComida * 0.30;
                     let carbItem = carbos[Math.floor(Math.random() * carbos.length)];
-                    itemsComida.push({ alimento: carbItem, cantidad: 90 });
+                    let cantCarb = Math.round((targetKcalCarb / carbItem.kcal) * 100);
+                    if (cantCarb < 30) cantCarb = 30;
+                    itemsComida.push({ alimento: carbItem, cantidad: cantCarb });
                 }
 
-                // Asignar vegetal o fruta
+                // Vegetal para volumen y saciedad
                 if (vegetales.length > 0 && i !== 0) {
                     let vegItem = vegetales[Math.floor(Math.random() * vegetales.length)];
                     itemsComida.push({ alimento: vegItem, cantidad: 120 });
@@ -487,7 +578,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-emerald-400 tracking-wide uppercase text-[11px]">📌 ${bloque.comida}</span>
-                        <span class="text-slate-400 font-semibold">Total: <span id="plato-kcal-${bIndex}" class="text-slate-200">${totalKcalPlato}</span> kcal</span>
+                        <span class="text-slate-400 font-semibold">Total Ingesta: <span id="plato-kcal-${bIndex}" class="text-slate-200">${totalKcalPlato}</span> kcal</span>
                     </div>
                     <div class="space-y-1">${htmlItems}</div>
                 `;
@@ -501,7 +592,7 @@
             let cantidad = parseFloat(nuevaCantidad);
             if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
             menuGeneradoCache[bIndex].items[iIndex].cantidad = cantidad;
-            renderMenuAutomaticoUI(); // Re-renderiza para balancear automáticamente subtotales
+            renderMenuAutomaticoUI();
         }
 
         function cargarMenuAutoAlDiario() {
