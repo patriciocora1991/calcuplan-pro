@@ -27,7 +27,7 @@
         <!-- Navegación por pestañas -->
         <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2">
             <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE & Metas</button>
-            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Automático</button>
+            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Inteligente</button>
             <button onclick="switchTab('menu')" id="tab-menu" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">3. Diario Nutricional</button>
             <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base & Restricciones</button>
         </div>
@@ -93,55 +93,75 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 2: PLANIFICADOR Y MENÚ AUTOMÁTICO -->
+        <!-- SECCIÓN 2: PLANIFICADOR Y MENÚ INTELIGENTE -->
         <section id="section-planificador" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h2 class="text-lg font-semibold mb-3 text-emerald-400">Estrategia y Generador de Menú</h2>
-                <p class="text-xs text-slate-400 mb-4">Define cuántas ingestas realizarás y genera automáticamente un esquema inteligente respetando tus restricciones.</p>
+                <h2 class="text-lg font-semibold mb-3 text-emerald-400">Configuración del Plan Alimentario</h2>
+                <p class="text-xs text-slate-400 mb-4">Selecciona tu objetivo, el estilo de alimentación y el fraccionamiento de tus comidas.</p>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad de Comidas Diarias</label>
-                        <select id="plan-num-comidas" onchange="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
-                            <option value="3">3 Comidas (Desayuno, Almuerzo, Cena)</option>
-                            <option value="4">4 Comidas (Desayuno, Almuerzo, Merienda, Cena)</option>
-                            <option value="5" selected>5 Comidas (Incluye Colación / Media Mañana)</option>
-                            <option value="6">6 Comidas (Fraccionamiento Alto)</option>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Objetivo Nutricional</label>
+                        <select id="plan-objetivo" onchange="actualizarMetaPorObjetivo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                            <option value="deficit">Definición (Pérdida de Grasa -20%)</option>
+                            <option value="mantenimiento" selected>Mantenimiento (Peso Estable)</option>
+                            <option value="volumen">Volumen (Ganancia Muscular +15%)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Meta Calórica de Referencia</label>
-                        <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tipo de Alimentación</label>
+                        <select id="plan-tipo-dieta" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                            <option value="equilibrada">Equilibrada / Estándar</option>
+                            <option value="lowcarb">Low Carb (Baja en Carbohidratos)</option>
+                            <option value="vegetariana">Vegetariana (Sin carnes ni pescados)</option>
+                            <option value="altaenproteinas">Alta en Proteínas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad de Ingestas</label>
+                        <select id="plan-num-comidas" onchange="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                            <option value="3">3 Comidas (Desayuno, Almuerzo, Cena)</option>
+                            <option value="4">4 Comidas (Desayuno, Almuerzo, Merienda, Cena)</option>
+                            <option value="5" selected>5 Comidas (Incluye Colación)</option>
+                            <option value="6">6 Comidas (Alto fraccionamiento)</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <span class="text-xs text-slate-400 block">Distribución objetivo por ingesta:</span>
-                        <span id="info-porcion-comida" class="text-sm font-bold text-emerald-400">-</span>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Meta Calórica Diaria (kcal)</label>
+                        <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                     </div>
-                    <button onclick="generarMenuAutomatico()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-3 rounded-xl transition shadow-lg">✨ Generar Esquema de Menú Automático</button>
+                    <div class="flex items-end">
+                        <button onclick="generarMenuAutomatico()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
+                    <span class="text-slate-400">Distribución estimada por comida:</span>
+                    <span id="info-porcion-comida" class="font-bold text-emerald-400">-</span>
                 </div>
             </div>
 
-            <!-- Contenedor del Menú Generado Automáticamente -->
+            <!-- Contenedor del Menú Generado (Con edición y balanceo automático) -->
             <div id="contenedor-menu-auto" class="hidden space-y-4">
-                <div class="flex justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl gap-3">
                     <div>
-                        <h3 class="text-sm font-bold text-emerald-300">Esquema Sugerido para tu Día</h3>
-                        <p class="text-xs text-slate-400">Puedes revisar las combinaciones o cargarlas directamente a tu diario.</p>
+                        <h3 class="text-sm font-bold text-emerald-300">Menú Sugerido y Balanceado</h3>
+                        <p class="text-xs text-slate-400">Modifica los gramos de cualquier alimento: los totales se recalculan automáticamente.</p>
                     </div>
-                    <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition">📥 Cargar este Menú a mi Diario</button>
+                    <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition w-full sm:w-auto">📥 Cargar Menú al Diario</button>
                 </div>
                 <div id="lista-menu-auto" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
 
-            <!-- Sugerencias de Alimentos Aptos -->
+            <!-- Alimentos Aptos Disponibles -->
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Aptos Disponibles (Sin Restricciones)</h3>
-                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2">
+                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Aptos en Base</h3>
+                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-50 overflow-y-auto pr-2">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
@@ -176,7 +196,7 @@
                 <h3 class="text-md font-semibold mb-4 text-slate-200">Registrar Alimento al Menú</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Comida / Momento</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Momento</label>
                         <select id="log-comida" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                             <option value="Desayuno">Desayuno</option>
                             <option value="Media Mañana">Media Mañana</option>
@@ -187,15 +207,15 @@
                         </select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Seleccionar Alimento Apto (por 100g)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Seleccionar Alimento (por 100g)</label>
                         <select id="log-alimento" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"></select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad (en gramos o mililitros)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad (gramos o mililitros)</label>
                         <input type="number" id="log-cantidad" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" value="100" placeholder="Ej: 150">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="agregarAlDiario()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-2.5 rounded-lg transition">Sumar al Menú</button>
+                        <button onclick="agregarAlDiario()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-2.5 rounded-lg transition">Sumar al Diario</button>
                     </div>
                 </div>
             </div>
@@ -211,37 +231,37 @@
         <!-- SECCIÓN 4: BASE DE DATOS Y RESTRICCIONES -->
         <section id="section-alimentos" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h2 class="text-lg font-semibold mb-4 text-emerald-400">Agregar Alimento Manualmente</h2>
+                <h2 class="text-lg font-semibold mb-4 text-emerald-400">Agregar Alimento Personalizado</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nombre del Alimento o Marca</label>
-                        <input type="text" id="nuevo-nombre" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: Fideos marca X / Alfajor artesanal">
+                        <input type="text" id="nuevo-nombre" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: Yerba Mate / Galletas de Arroz">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Calorías (kcal / 100g)</label>
-                        <input type="number" id="nuevo-kcal" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 250">
+                        <input type="number" id="nuevo-kcal" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 350">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Proteínas (g / 100g)</label>
-                        <input type="number" id="nuevo-prot" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 12">
+                        <input type="number" id="nuevo-prot" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 10">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Carbohidratos (g / 100g)</label>
-                        <input type="number" id="nuevo-carb" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 45">
+                        <input type="number" id="nuevo-carb" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 60">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Grasas (g / 100g)</label>
-                        <input type="number" id="nuevo-gras" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 8">
+                        <input type="number" id="nuevo-gras" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: 5">
                     </div>
                 </div>
                 <button onclick="guardarNuevoAlimento()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Guardar en la Base</button>
             </div>
 
-            <!-- Gestión de Restricciones / Lista de Exclusión -->
+            <!-- Gestión de Restricciones (Lista Negra) -->
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
                 <h3 class="text-md font-semibold mb-2 text-rose-400">Restricción de Alimentos (Lista Negra)</h3>
-                <p class="text-xs text-slate-400 mb-4">Selecciona los alimentos que deseas **restringir u ocultar** de tus sugerencias de planificación y listados activos.</p>
-                <div id="contenedor-restricciones" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto bg-slate-900 p-4 rounded-xl border border-slate-800">
+                <p class="text-xs text-slate-400 mb-4">Selecciona los alimentos que deseas excluir de la generación automática y de tus listados activos.</p>
+                <div id="contenedor-restricciones" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-50 overflow-y-auto bg-slate-900 p-4 rounded-xl border border-slate-800">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
@@ -249,32 +269,40 @@
     </div>
 
     <script>
-        const alimentosBaseIniciales = [
-            { nombre: "Pechuga de Pollo (sin piel)", kcal: 165, prot: 31, carb: 0, gras: 3.6 },
-            { nombre: "Cuadrada (Vacuno Magro)", kcal: 138, prot: 21.5, carb: 0, gras: 5.4 },
-            { nombre: "Filet de Merluza", kcal: 82, prot: 17.5, carb: 0, gras: 1.2 },
-            { nombre: "Atún en lata al agua", kcal: 105, prot: 24, carb: 0, gras: 1 },
-            { nombre: "Huevo Entero (unidad ~50g)", kcal: 72, prot: 6.3, carb: 0.4, gras: 4.8 },
-            { nombre: "Queso Port Salut Light", kcal: 215, prot: 25, carb: 1, gras: 12 },
-            { nombre: "Leche Descremada", kcal: 36, prot: 3.2, carb: 5, gras: 0.1 },
-            { nombre: "Yogur Descremado Saborizado", kcal: 48, prot: 4.2, carb: 7.5, gras: 0.1 },
-            { nombre: "Arroz Blanco (Cocido)", kcal: 130, prot: 2.7, carb: 28, gras: 0.3 },
-            { nombre: "Fideos de Sémola (Cocidos)", kcal: 138, prot: 4.5, carb: 25, gras: 1.1 },
-            { nombre: "Avena Arrollada", kcal: 367, prot: 13, carb: 66, gras: 7 },
-            { nombre: "Papa (Hervida/Al horno)", kcal: 87, prot: 1.9, carb: 20, gras: 0.1 },
-            { nombre: "Batata (Hervida/Al horno)", kcal: 86, prot: 1.6, carb: 20, gras: 0.1 },
-            { nombre: "Lentejas (Cocidas)", kcal: 116, prot: 9, carb: 20, gras: 0.4 },
-            { nombre: "Acelga (Cocida)", kcal: 20, prot: 2.1, carb: 3.8, gras: 0.2 },
-            { nombre: "Tomate Redondo", kcal: 18, prot: 0.9, carb: 3.9, gras: 0.2 },
-            { nombre: "Banana", kcal: 89, prot: 1.1, carb: 22.8, gras: 0.3 },
-            { nombre: "Manzana", kcal: 52, prot: 0.3, carb: 13.8, gras: 0.2 },
-            { nombre: "Aceite de Oliva / Girasol", kcal: 884, prot: 0, carb: 0, gras: 100 },
-            { nombre: "Palta (Aguacate)", kcal: 160, prot: 2, carb: 8.5, gras: 14.7 },
-            { nombre: "Mate (Infusión)", kcal: 2, prot: 0.1, carb: 0.4, gras: 0 },
-            { nombre: "Agua Saborizada Zero", kcal: 0, prot: 0, carb: 0, gras: 0 }
+        const alimentosBaseArgentinos = [
+            // Proteínas Animales y Huevos
+            { nombre: "Pechuga de Pollo", kcal: 165, prot: 31, carb: 0, gras: 3.6, categoria: "proteina" },
+            { nombre: "Milanesa de Pollo al Horno", kcal: 210, prot: 18, carb: 14, gras: 9, categoria: "proteina" },
+            { nombre: "Bife de Vacuno Magro (Cuadrada/Paleta)", kcal: 145, prot: 22, carb: 0, gras: 6, categoria: "proteina" },
+            { nombre: "Filet de Merluza", kcal: 82, prot: 17.5, carb: 0, gras: 1.2, categoria: "proteina" },
+            { nombre: "Atún en lata al agua", kcal: 105, prot: 24, carb: 0, gras: 1, categoria: "proteina" },
+            { nombre: "Huevo Entero (unidad ~50g)", kcal: 72, prot: 6.3, carb: 0.4, gras: 4.8, categoria: "proteina" },
+            // Lácteos y Derivados
+            { nombre: "Queso Cremoso Light (Port Salut)", kcal: 215, prot: 25, carb: 1, gras: 12, categoria: "lacteo" },
+            { nombre: "Queso Untable Descremado", kcal: 105, prot: 10, carb: 4, gras: 5, categoria: "lacteo" },
+            { nombre: "Leche Descremada", kcal: 36, prot: 3.2, carb: 5, gras: 0.1, categoria: "lacteo" },
+            { nombre: "Yogur Descremado Saborizado", kcal: 48, prot: 4.2, carb: 7.5, gras: 0.1, categoria: "lacteo" },
+            // Carbohidratos y Harinas
+            { nombre: "Arroz Blanco (Cocido)", kcal: 130, prot: 2.7, carb: 28, gras: 0.3, categoria: "carbo" },
+            { nombre: "Fideos de Sémola (Cocidos)", kcal: 138, prot: 4.5, carb: 25, gras: 1.1, categoria: "carbo" },
+            { nombre: "Avena Arrollada", kcal: 367, prot: 13, carb: 66, gras: 7, categoria: "carbo" },
+            { nombre: "Pan Lactal Integral / Salvado", kcal: 245, prot: 9, carb: 42, gras: 3.5, categoria: "carbo" },
+            { nombre: "Papa (Hervida / Al horno)", kcal: 87, prot: 1.9, carb: 20, gras: 0.1, categoria: "carbo" },
+            { nombre: "Batata (Hervida / Al horno)", kcal: 86, prot: 1.6, carb: 20, gras: 0.1, categoria: "carbo" },
+            { nombre: "Lentejas (Cocidas)", kcal: 116, prot: 9, carb: 20, gras: 0.4, categoria: "carbo" },
+            // Vegetales y Frutas
+            { nombre: "Acelga / Espinaca (Cocida)", kcal: 20, prot: 2.1, carb: 3.8, gras: 0.2, categoria: "vegetal" },
+            { nombre: "Zapallitos / Calabaza (Al horno/Hervida)", kcal: 35, prot: 1.2, carb: 8, gras: 0.2, categoria: "vegetal" },
+            { nombre: "Tomate Redondo y Lechuga", kcal: 17, prot: 0.9, carb: 3.5, gras: 0.2, categoria: "vegetal" },
+            { nombre: "Banana", kcal: 89, prot: 1.1, carb: 22.8, gras: 0.3, categoria: "fruta" },
+            { nombre: "Manzana / Mandarina", kcal: 50, prot: 0.4, carb: 13, gras: 0.2, categoria: "fruta" },
+            // Grasas Saludables y Extras
+            { nombre: "Aceite de Girasol / Oliva", kcal: 884, prot: 0, carb: 0, gras: 100, categoria: "grasa" },
+            { nombre: "Palta (Aguacate)", kcal: 160, prot: 2, carb: 8.5, gras: 14.7, categoria: "grasa" },
+            { nombre: "Mate (Infusión)", kcal: 2, prot: 0.1, carb: 0.4, gras: 0, categoria: "extra" }
         ];
 
-        let alimentos = JSON.parse(localStorage.getItem('calcuplan_alimentos')) || alimentosBaseIniciales;
+        let alimentos = JSON.parse(localStorage.getItem('calcuplan_alimentos')) || alimentosBaseArgentinos;
         let diario = JSON.parse(localStorage.getItem('calcuplan_diario')) || [];
         let restricciones = JSON.parse(localStorage.getItem('calcuplan_restricciones')) || [];
         let metaCaloriasGlobal = localStorage.getItem('calcuplan_meta') || 2000;
@@ -326,23 +354,33 @@
             document.getElementById('resultado-tdee').classList.remove('hidden');
         }
 
+        function actualizarMetaPorObjetivo() {
+            const objetivo = document.getElementById('plan-objetivo').value;
+            let base = parseFloat(document.getElementById('plan-meta-kcal').value) || metaCaloriasGlobal;
+            
+            // Si el usuario ya calculó su TDEE, usémoslo como referencia base aproximada
+            if(objetivo === 'deficit') {
+                document.getElementById('plan-meta-kcal').value = Math.round(metaCaloriasGlobal * 0.80);
+            } else if(objetivo === 'mantenimiento') {
+                document.getElementById('plan-meta-kcal').value = metaCaloriasGlobal;
+            } else if(objetivo === 'volumen') {
+                document.getElementById('plan-meta-kcal').value = Math.round(metaCaloriasGlobal * 1.15);
+            }
+            actualizarPlanificador();
+        }
+
         function actualizarPlanificador() {
             const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const kcalPorComida = Math.round(metaKcal / numComidas);
 
-            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} comidas.`;
+            document.getElementById('info-porcion-comida').innerText = `Aprox. ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas.`;
 
             const contenedor = document.getElementById('contenedor-sugeridos');
             contenedor.innerHTML = '';
             
             const alimentosAptos = alimentos.filter(item => !restricciones.includes(item.nombre));
             
-            if(alimentosAptos.length === 0) {
-                contenedor.innerHTML = `<p class="text-xs text-slate-500">Todos los alimentos están restringidos.</p>`;
-                return;
-            }
-
             alimentosAptos.forEach(item => {
                 let div = document.createElement('div');
                 div.className = "bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center";
@@ -363,17 +401,26 @@
 
         function generarMenuAutomatico() {
             const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
-            const aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
+            const tipoDieta = document.getElementById('plan-tipo-dieta').value;
+            let aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
+
+            // Filtros según tipo de alimentación
+            if (tipoDieta === 'vegetariana') {
+                aptos = aptos.filter(i => !i.nombre.toLowerCase().includes("pollo") && !i.nombre.toLowerCase().includes("vacuno") && !i.nombre.toLowerCase().includes("merluza") && !i.nombre.toLowerCase().includes("atún"));
+            } else if (tipoDieta === 'lowcarb') {
+                aptos = aptos.filter(i => i.categoria !== 'carbo' || i.nombre.toLowerCase().includes('lentejas'));
+            } else if (tipoDieta === 'altaenproteinas') {
+                // Prioriza alimentos con buena proteína
+            }
 
             if (aptos.length === 0) {
-                alert("No hay alimentos aptos disponibles para generar el menú.");
+                alert("No hay suficientes alimentos aptos con los filtros actuales.");
                 return;
             }
 
-            // Clasificación heurística básica para armar platos lógicos
-            const proteinas = aptos.filter(i => i.prot >= 12);
+            const proteinas = aptos.filter(i => i.prot >= 10);
             const carbos = aptos.filter(i => i.carb >= 15);
-            const vegetalesFrutas = aptos.filter(i => i.kcal < 60 || (i.carb < 15 && i.prot < 10));
+            const vegetales = aptos.filter(i => i.categoria === 'vegetal' || i.kcal < 50);
 
             const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
             menuGeneradoCache = [];
@@ -382,19 +429,20 @@
                 let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
                 let itemsComida = [];
 
-                // Seleccionar proteína
+                // Asignar proteína principal
                 let protItem = proteinas.length > 0 ? proteinas[Math.floor(Math.random() * proteinas.length)] : aptos[0];
-                let cantProt = protItem.nombre.includes("Huevo") ? 100 : 150; // 2 huevos o 150g carne/pollo
+                let cantProt = protItem.nombre.includes("Huevo") ? 100 : (protItem.nombre.includes("Avena") ? 60 : 130);
                 itemsComida.push({ alimento: protItem, cantidad: cantProt });
 
-                // Seleccionar carbohidrato o vegetal según el momento
-                if ((i === 2 || i === 4) && carbos.length > 0) { // Almuerzo o Cena con Carbohidrato
+                // Asignar carbohidrato en almuerzo/cena si no es strict lowcarb
+                if ((i === 2 || i === 4) && tipoDieta !== 'lowcarb' && carbos.length > 0) {
                     let carbItem = carbos[Math.floor(Math.random() * carbos.length)];
-                    itemsComida.push({ alimento: carbItem, cantidad: 100 });
+                    itemsComida.push({ alimento: carbItem, cantidad: 90 });
                 }
 
-                if (vegetalesFrutas.length > 0) {
-                    let vegItem = vegetalesFrutas[Math.floor(Math.random() * vegetalesFrutas.length)];
+                // Asignar vegetal o fruta
+                if (vegetales.length > 0 && i !== 0) {
+                    let vegItem = vegetales[Math.floor(Math.random() * vegetales.length)];
                     itemsComida.push({ alimento: vegItem, cantidad: 120 });
                 }
 
@@ -412,30 +460,48 @@
             const lista = document.getElementById('lista-menu-auto');
             lista.innerHTML = '';
 
-            menuGeneradoCache.forEach(bloque => {
+            menuGeneradoCache.forEach((bloque, bIndex) => {
                 let card = document.createElement('div');
-                card.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs space-y-2";
+                card.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs space-y-3";
                 
                 let htmlItems = '';
-                bloque.items.forEach(it => {
+                let totalKcalPlato = 0;
+
+                bloque.items.forEach((it, iIndex) => {
                     let factor = it.cantidad / 100;
                     let kcal = Math.round(it.alimento.kcal * factor);
+                    totalKcalPlato += kcal;
+
                     htmlItems += `
-                        <div class="flex justify-between items-center py-1 border-b border-slate-800/50">
-                            <span class="text-slate-300 font-medium">${it.alimento.nombre} <span class="text-slate-500">(${it.cantidad}g/ml)</span></span>
-                            <span class="text-emerald-400 font-bold">${kcal} kcal</span>
+                        <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 gap-2">
+                            <span class="text-slate-300 font-medium truncate w-36 sm:w-44">${it.alimento.nombre}</span>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" value="${it.cantidad}" min="1" onchange="actualizarCantidadItem(${bIndex}, ${iIndex}, this.value)" class="w-14 bg-slate-800 border border-slate-700 rounded p-1 text-center font-bold text-emerald-400">
+                                <span class="text-slate-400 text-[10px]">g/ml</span>
+                            </div>
+                            <span class="text-emerald-400 font-bold w-14 text-right">${kcal} kcal</span>
                         </div>
                     `;
                 });
 
                 card.innerHTML = `
-                    <div class="font-bold text-emerald-400 tracking-wide uppercase text-[11px] mb-1">📌 ${bloque.comida}</div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-emerald-400 tracking-wide uppercase text-[11px]">📌 ${bloque.comida}</span>
+                        <span class="text-slate-400 font-semibold">Total: <span id="plato-kcal-${bIndex}" class="text-slate-200">${totalKcalPlato}</span> kcal</span>
+                    </div>
                     <div class="space-y-1">${htmlItems}</div>
                 `;
                 lista.appendChild(card);
             });
 
             contenedor.classList.remove('hidden');
+        }
+
+        function actualizarCantidadItem(bIndex, iIndex, nuevaCantidad) {
+            let cantidad = parseFloat(nuevaCantidad);
+            if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
+            menuGeneradoCache[bIndex].items[iIndex].cantidad = cantidad;
+            renderMenuAutomaticoUI(); // Re-renderiza para balancear automáticamente subtotales
         }
 
         function cargarMenuAutoAlDiario() {
@@ -459,7 +525,7 @@
 
             localStorage.setItem('calcuplan_diario', JSON.stringify(diario));
             renderDiario();
-            alert("¡Esquema de menú cargado con éxito a tu Diario Nutricional!");
+            alert("¡Menú inteligente cargado con éxito a tu Diario Nutricional!");
             switchTab('menu');
         }
 
@@ -516,7 +582,7 @@
                 return;
             }
 
-            alimentos.push({ nombre, kcal, prot, carb, gras });
+            alimentos.push({ nombre, kcal, prot, carb, gras, categoria: "personalizado" });
             localStorage.setItem('calcuplan_alimentos', JSON.stringify(alimentos));
             
             document.getElementById('nuevo-nombre').value = '';
