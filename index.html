@@ -12,33 +12,35 @@
             body { background-color: #ffffff !important; color: #000000 !important; }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
+            .print-bg-white { background-color: #ffffff !important; color: #000000 !important; border-color: #cbd5e1 !important; }
         }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen">
 
-    <div class="max-w-4xl mx-auto p-4 sm:p-6">
+    <div class="max-w-5xl mx-auto p-4 sm:p-6">
         <!-- Header -->
         <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4 no-print">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-emerald-400">CalcuPlan Pro</h1>
-                <p class="text-xs text-slate-400">Control Metabólico, Planificación Automática y Reportes PDF</p>
+                <p class="text-xs text-slate-400">Control Metabólico, Menú Semanal Inteligente y Reportes PDF</p>
             </div>
             <div class="text-right">
                 <span id="current-date" class="text-xs font-medium text-slate-400"></span>
+                <span class="block text-[11px] text-emerald-500 font-semibold">Lic. Patricio Cora</span>
             </div>
         </header>
 
         <!-- Navegación por pestañas -->
         <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-2 no-print">
             <button onclick="switchTab('calculadora')" id="tab-calculadora" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition">1. TDEE & Macros</button>
-            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Inteligente</button>
+            <button onclick="switchTab('planificador')" id="tab-planificador" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">2. Plan & Menú Semanal</button>
             <button onclick="switchTab('menu')" id="tab-menu" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">3. Diario Nutricional</button>
-            <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base & Restricciones</button>
+            <button onclick="switchTab('alimentos')" id="tab-alimentos" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">4. Base de Alimentos</button>
             <button onclick="switchTab('reporte')" id="tab-reporte" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-400 hover:bg-slate-800 transition">5. Reporte & PDF</button>
         </div>
 
-        <!-- SECCIÓN 1: TDEE, METAS, MACROS Y MICROS -->
+        <!-- SECCIÓN 1: TDEE, METAS Y MACROS -->
         <section id="section-calculadora" class="space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
                 <h2 class="text-lg font-semibold mb-4 text-emerald-400">Calculadora de Gasto Energético (Mifflin-St Jeor)</h2>
@@ -73,10 +75,9 @@
                         </select>
                     </div>
                 </div>
-                <button onclick="calcularTDEE()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Calcular Requerimientos, Macros y Micros</button>
+                <button onclick="calcularTDEE()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Calcular Requerimientos y Macros</button>
             </div>
 
-            <!-- Resultados TDEE -->
             <div id="resultado-tdee" class="hidden space-y-4">
                 <div class="bg-emerald-950/40 border border-emerald-800/60 p-6 rounded-2xl">
                     <h3 class="text-md font-semibold text-emerald-300 mb-3">Tus Resultados Metabólicos:</h3>
@@ -100,10 +101,9 @@
                     </div>
                 </div>
 
-                <!-- Desglose de Macronutrientes y Micronutrientes por Objetivo -->
                 <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-md font-semibold text-emerald-400">Distribución de Macronutrientes Sugeridos</h3>
+                        <h3 class="text-md font-semibold text-emerald-400">Distribución de Macronutrientes</h3>
                         <select id="select-objetivo-macros" onchange="actualizarDesgloseMacros()" class="bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-emerald-300 font-semibold">
                             <option value="deficit">Objetivo: Definición</option>
                             <option value="mantenimiento" selected>Objetivo: Mantenimiento</option>
@@ -113,81 +113,74 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-400 block mb-1">Proteínas (Alta prioridad)</span>
+                            <span class="text-xs text-slate-400 block mb-1">Proteínas</span>
                             <span id="macro-prot-gramos" class="text-xl font-bold text-blue-400">-</span>
                             <span id="macro-prot-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-400 block mb-1">Carbohidratos (Energía)</span>
+                            <span class="text-xs text-slate-400 block mb-1">Carbohidratos</span>
                             <span id="macro-carb-gramos" class="text-xl font-bold text-amber-400">-</span>
                             <span id="macro-carb-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-400 block mb-1">Grasas (Hormonal / Celular)</span>
+                            <span class="text-xs text-slate-400 block mb-1">Grasas</span>
                             <span id="macro-gras-gramos" class="text-xl font-bold text-rose-400">-</span>
                             <span id="macro-gras-kcal" class="block text-[11px] text-slate-500 mt-1">-</span>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-700/60 pt-4 mt-4 space-y-2">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">💧 Guía de Hidratación y Micronutrientes Esenciales</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                                <span class="font-semibold text-emerald-400 block mb-0.5">Agua e Hidratación</span>
-                                <p id="info-agua" class="text-slate-400 text-[11px]">-</p>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                                <span class="font-semibold text-emerald-400 block mb-0.5">Electrolitos y Micronutrientes Clave</span>
-                                <p class="text-slate-400 text-[11px]">Sodio (magnesio/potasio) post-entreno, fibra alta (>25g/día vía vegetales de hoja verde y frutas) y omega-3.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 2: PLANIFICADOR Y MENÚ INTELIGENTE -->
+        <!-- SECCIÓN 2: PLAN & MENÚ SEMANAL INTELIGENTE -->
         <section id="section-planificador" class="hidden space-y-6">
-            <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h2 class="text-lg font-semibold mb-3 text-emerald-400">Configuración del Plan Alimentario</h2>
-                <p class="text-xs text-slate-400 mb-4">El generador inteligente diseña menús factibles y equilibrados para cada ingesta.</p>
+            <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4">
+                <h2 class="text-lg font-semibold text-emerald-400">Configuración del Plan Semanal</h2>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Objetivo Nutricional</label>
                         <select id="plan-objetivo" onchange="actualizarMetaPorObjetivo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
-                            <option value="deficit">Definición (Pérdida de Grasa -20%)</option>
-                            <option value="mantenimiento" selected>Mantenimiento (Peso Estable)</option>
-                            <option value="volumen">Volumen (Ganancia Muscular +15%)</option>
+                            <option value="deficit">Definición (-20%)</option>
+                            <option value="mantenimiento" selected>Mantenimiento (Estable)</option>
+                            <option value="volumen">Volumen (+15%)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Tipo de Alimentación</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tipo de Dieta</label>
                         <select id="plan-tipo-dieta" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                             <option value="equilibrada">Equilibrada / Estándar</option>
                             <option value="lowcarb">Low Carb (Baja en Carbohidratos)</option>
-                            <option value="vegetariana">Vegetariana (Sin carnes ni pescados)</option>
+                            <option value="vegetariana">Vegetariana (Sin carnes)</option>
                             <option value="altaenproteinas">Alta en Proteínas</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad de Ingestas</label>
-                        <select id="plan-num-comidas" onchange="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Ingestas Diarias</label>
+                        <select id="plan-num-comidas" onchange="actualizarPlanificadorInfo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                             <option value="3">3 Comidas (Desayuno, Almuerzo, Cena)</option>
                             <option value="4">4 Comidas (Desayuno, Almuerzo, Merienda, Cena)</option>
                             <option value="5" selected>5 Comidas (Incluye Colación)</option>
-                            <option value="6">6 Comidas (Alto fraccionamiento)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Meta Calórica Diaria (kcal)</label>
-                        <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificador()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
+                        <input type="number" id="plan-meta-kcal" value="2000" oninput="actualizarPlanificadorInfo()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="generarMenuFactible()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Inteligente Realista</button>
+                        <button onclick="generarMenuSemanalInteligente()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-3 px-4 rounded-lg transition shadow-lg">✨ Generar Menú Semanal Completo (Lunes a Domingo)</button>
+                    </div>
+                </div>
+
+                <!-- Restricciones integradas directamente en el generador -->
+                <div class="border-t border-slate-700 pt-4 mt-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">🚫 Restricciones de Alimentos (Exclusiones para el Menú)</h3>
+                    <p class="text-[11px] text-slate-400 mb-3">Marca los alimentos que no deseas que aparezcan en el menú semanal generado.</p>
+                    <div id="contenedor-restricciones-plan" class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-36 overflow-y-auto bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <!-- Inyectado dinámicamente -->
                     </div>
                 </div>
 
@@ -197,24 +190,23 @@
                 </div>
             </div>
 
-            <!-- Contenedor del Menú Generado -->
-            <div id="contenedor-menu-auto" class="hidden space-y-4">
+            <!-- Contenedor del Menú Semanal Generado con Edición y Personalización -->
+            <div id="contenedor-menu-semanal" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl gap-3">
                     <div>
-                        <h3 class="text-sm font-bold text-emerald-300">Menú Sugerido y Balanceado</h3>
-                        <p class="text-xs text-slate-400">Modifica los gramos o porciones en tiempo real: los totales se recalculan automáticamente.</p>
+                        <h3 class="text-sm font-bold text-emerald-300">Menú Semanal Personalizable</h3>
+                        <p class="text-xs text-slate-400">Personaliza cualquier plato en tiempo real: cambia alimentos, ajusta gramos, añade ingredientes o elimina ítems.</p>
                     </div>
-                    <button onclick="cargarMenuAutoAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition w-full sm:w-auto">📥 Cargar Menú al Diario</button>
+                    <button onclick="cargarMenuSemanalAlDiario()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition w-full sm:w-auto">📥 Cargar este Menú a Hoy</button>
                 </div>
-                <div id="lista-menu-auto" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <!-- Pestañas de Días de la Semana -->
+                <div id="dias-tabs" class="flex flex-wrap gap-1 border-b border-slate-800 pb-2">
                     <!-- Inyectado dinámicamente -->
                 </div>
-            </div>
 
-            <!-- Alimentos Aptos Disponibles -->
-            <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Aptos en Base</h3>
-                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-50 overflow-y-auto pr-2">
+                <!-- Contenido del Día Seleccionado -->
+                <div id="dia-activo-contenido" class="space-y-4">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
@@ -246,7 +238,7 @@
             </div>
 
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-md font-semibold mb-4 text-slate-200">Registrar Alimento al Menú</h3>
+                <h3 class="text-md font-semibold mb-4 text-slate-200">Registrar Alimento al Diario</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Momento</label>
@@ -256,7 +248,7 @@
                             <option value="Almuerzo">Almuerzo</option>
                             <option value="Merienda">Merienda</option>
                             <option value="Cena">Cena</option>
-                            <option value="Colación">Colación Nocturna</option>
+                            <option value="Colación Nocturna">Colación Nocturna</option>
                         </select>
                     </div>
                     <div class="sm:col-span-2">
@@ -264,7 +256,7 @@
                         <select id="log-alimento" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm"></select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad (gramos o mililitros)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Cantidad (gramos o ml)</label>
                         <input type="number" id="log-cantidad" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" value="100" placeholder="Ej: 150">
                     </div>
                     <div class="flex items-end">
@@ -281,14 +273,14 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 4: BASE DE DATOS Y RESTRICCIONES -->
+        <!-- SECCIÓN 4: BASE DE DATOS Y ALIMENTOS -->
         <section id="section-alimentos" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
                 <h2 class="text-lg font-semibold mb-4 text-emerald-400">Agregar Alimento Personalizado</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nombre del Alimento o Marca</label>
-                        <input type="text" id="nuevo-nombre" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: Yerba Mate / Galletas de Arroz">
+                        <input type="text" id="nuevo-nombre" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm" placeholder="Ej: Proteína Whey / Galletas de Arroz">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Calorías (kcal / 100g)</label>
@@ -310,11 +302,9 @@
                 <button onclick="guardarNuevoAlimento()" class="mt-5 w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm p-3 rounded-lg transition shadow-lg">Guardar en la Base</button>
             </div>
 
-            <!-- Gestión de Restricciones (Lista Negra) -->
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-md font-semibold mb-2 text-rose-400">Restricción de Alimentos (Lista Negra)</h3>
-                <p class="text-xs text-slate-400 mb-4">Selecciona los alimentos que deseas excluir de la generación automática y de tus listados activos.</p>
-                <div id="contenedor-restricciones" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-50 overflow-y-auto bg-slate-900 p-4 rounded-xl border border-slate-800">
+                <h3 class="text-md font-semibold mb-3 text-slate-200">Alimentos Disponibles en Base</h3>
+                <div id="contenedor-sugeridos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2">
                     <!-- Inyectado dinámicamente -->
                 </div>
             </div>
@@ -323,19 +313,19 @@
         <!-- SECCIÓN 5: REPORTE Y DESCARGA EN PDF -->
         <section id="section-reporte" class="hidden space-y-6">
             <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 gap-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 gap-4 no-print">
                     <div>
                         <h2 class="text-lg font-semibold text-emerald-400">Reporte Nutricional Profesional</h2>
-                        <p class="text-xs text-slate-400">Vista previa del plan alimentario optimizado para exportar o imprimir en PDF.</p>
+                        <p class="text-xs text-slate-400">Vista previa del menú semanal estructurado para exportar o imprimir en PDF.</p>
                     </div>
                     <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-3 rounded-lg transition shadow-lg flex items-center gap-2">
-                        🖨️ Descargar / Imprimir Menú en PDF
+                        🖨️ Descargar / Imprimir Menú Semanal en PDF
                     </button>
                 </div>
 
                 <!-- Cabecera del Reporte para PDF -->
-                <div id="reporte-contenido" class="space-y-4 text-xs">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                <div id="reporte-contenido" class="space-y-4 text-xs print-bg-white">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800 print-bg-white">
                         <div>
                             <span class="text-slate-400 block">Meta Diaria:</span>
                             <span id="rep-meta-kcal" class="font-bold text-emerald-400 text-sm">-</span>
@@ -349,15 +339,15 @@
                             <span id="rep-fecha" class="font-bold text-slate-200 text-sm">-</span>
                         </div>
                         <div>
-                            <span class="text-slate-400 block">Profesional:</span>
+                            <span class="text-slate-400 block">Preparador Físico:</span>
                             <span class="font-bold text-emerald-400 text-sm">Lic. Patricio Cora</span>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="font-bold text-sm text-slate-200 mb-2">Plan Semanal / Diario Estructurado:</h3>
-                        <div id="rep-lista-menu" class="space-y-3">
-                            <p class="text-slate-500">Primero genera un menú en la pestaña "2. Plan & Menú Inteligente".</p>
+                        <h3 class="font-bold text-sm text-slate-200 mb-3">Plan Nutricional Semanal (Lunes a Domingo):</h3>
+                        <div id="rep-lista-menu-semanal" class="space-y-4">
+                            <p class="text-slate-500 italic">Genera primero tu menú semanal en la pestaña "2. Plan & Menú Semanal".</p>
                         </div>
                     </div>
                 </div>
@@ -367,36 +357,30 @@
 
     <script>
         const alimentosBaseArgentinos = [
-            // Proteínas Animales y Huevos
             { nombre: "Pechuga de Pollo", kcal: 165, prot: 31, carb: 0, gras: 3.6, categoria: "proteina" },
             { nombre: "Milanesa de Pollo al Horno", kcal: 210, prot: 18, carb: 14, gras: 9, categoria: "proteina" },
-            { nombre: "Bife de Vacuno Magro (Cuadrada/Paleta)", kcal: 145, prot: 22, carb: 0, gras: 6, categoria: "proteina" },
+            { nombre: "Bife de Vacuno Magro", kcal: 145, prot: 22, carb: 0, gras: 6, categoria: "proteina" },
             { nombre: "Filet de Merluza", kcal: 82, prot: 17.5, carb: 0, gras: 1.2, categoria: "proteina" },
             { nombre: "Atún en lata al agua", kcal: 105, prot: 24, carb: 0, gras: 1, categoria: "proteina" },
             { nombre: "Huevo Entero (unidad ~50g)", kcal: 72, prot: 6.3, carb: 0.4, gras: 4.8, categoria: "proteina" },
-            // Lácteos y Desayuno
             { nombre: "Queso Cremoso Light (Port Salut)", kcal: 215, prot: 25, carb: 1, gras: 12, categoria: "lacteo" },
             { nombre: "Queso Untable Descremado", kcal: 105, prot: 10, carb: 4, gras: 5, categoria: "lacteo" },
             { nombre: "Leche Descremada", kcal: 36, prot: 3.2, carb: 5, gras: 0.1, categoria: "lacteo" },
             { nombre: "Yogur Descremado Saborizado", kcal: 48, prot: 4.2, carb: 7.5, gras: 0.1, categoria: "lacteo" },
             { nombre: "Pan Lactal Integral / Salvado", kcal: 245, prot: 9, carb: 42, gras: 3.5, categoria: "desayuno" },
             { nombre: "Avena Arrollada", kcal: 367, prot: 13, carb: 66, gras: 7, categoria: "desayuno" },
-            // Carbohidratos Almuerzo/Cena
             { nombre: "Arroz Blanco (Cocido)", kcal: 130, prot: 2.7, carb: 28, gras: 0.3, categoria: "carbo" },
             { nombre: "Fideos de Sémola (Cocidos)", kcal: 138, prot: 4.5, carb: 25, gras: 1.1, categoria: "carbo" },
             { nombre: "Papa (Hervida / Al horno)", kcal: 87, prot: 1.9, carb: 20, gras: 0.1, categoria: "carbo" },
             { nombre: "Batata (Hervida / Al horno)", kcal: 86, prot: 1.6, carb: 20, gras: 0.1, categoria: "carbo" },
             { nombre: "Lentejas (Cocidas)", kcal: 116, prot: 9, carb: 20, gras: 0.4, categoria: "carbo" },
-            // Vegetales y Frutas
             { nombre: "Acelga / Espinaca (Cocida)", kcal: 20, prot: 2.1, carb: 3.8, gras: 0.2, categoria: "vegetal" },
-            { nombre: "Zapallitos / Calabaza (Al horno/Hervida)", kcal: 35, prot: 1.2, carb: 8, gras: 0.2, categoria: "vegetal" },
-            { nombre: "Tomate Redondo y Lechuga", kcal: 17, prot: 0.9, carb: 3.5, gras: 0.2, categoria: "vegetal" },
+            { nombre: "Zapallitos / Calabaza", kcal: 35, prot: 1.2, carb: 8, gras: 0.2, categoria: "vegetal" },
+            { nombre: "Tomate y Lechuga", kcal: 17, prot: 0.9, carb: 3.5, gras: 0.2, categoria: "vegetal" },
             { nombre: "Banana", kcal: 89, prot: 1.1, carb: 22.8, gras: 0.3, categoria: "fruta" },
             { nombre: "Manzana / Mandarina", kcal: 50, prot: 0.4, carb: 13, gras: 0.2, categoria: "fruta" },
-            // Grasas Saludables y Extras
             { nombre: "Aceite de Girasol / Oliva", kcal: 884, prot: 0, carb: 0, gras: 100, categoria: "grasa" },
-            { nombre: "Palta (Aguacate)", kcal: 160, prot: 2, carb: 8.5, gras: 14.7, categoria: "grasa" },
-            { nombre: "Mate (Infusión)", kcal: 2, prot: 0.1, carb: 0.4, gras: 0, categoria: "extra" }
+            { nombre: "Palta (Aguacate)", kcal: 160, prot: 2, carb: 8.5, gras: 14.7, categoria: "grasa" }
         ];
 
         let alimentos = JSON.parse(localStorage.getItem('calcuplan_alimentos')) || alimentosBaseArgentinos;
@@ -404,9 +388,12 @@
         let restricciones = JSON.parse(localStorage.getItem('calcuplan_restricciones')) || [];
         let metaCaloriasGlobal = parseFloat(localStorage.getItem('calcuplan_meta')) || 2000;
         let pesoGlobal = parseFloat(localStorage.getItem('calcuplan_peso')) || 75;
-        let menuGeneradoCache = [];
+        let menuSemanalCache = JSON.parse(localStorage.getItem('calcuplan_menu_semanal')) || [];
+        let diaActivoIndex = 0;
 
+        const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
         const fechaStr = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
         document.getElementById('current-date').innerText = fechaStr;
         document.getElementById('meta-kcal').innerText = metaCaloriasGlobal;
         document.getElementById('plan-meta-kcal').value = metaCaloriasGlobal;
@@ -419,7 +406,12 @@
             document.getElementById(`section-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 text-white transition";
             
-            if(tab === 'planificador') actualizarPlanificador();
+            if(tab === 'planificador') {
+                actualizarRestriccionesPlanUI();
+                actualizarPlanificadorInfo();
+                if(menuSemanalCache.length > 0) renderMenuSemanalUI();
+            }
+            if(tab === 'alimentos') actualizarBaseAlimentosUI();
             if(tab === 'reporte') actualizarReporteUI();
         }
 
@@ -476,15 +468,10 @@
 
             document.getElementById('macro-prot-gramos').innerText = `${Math.round(kcalProt / 4)} g`;
             document.getElementById('macro-prot-kcal').innerText = `(${Math.round(pProt * 100)}% - ${Math.round(kcalProt)} kcal)`;
-
             document.getElementById('macro-carb-gramos').innerText = `${Math.round(kcalCarb / 4)} g`;
             document.getElementById('macro-carb-kcal').innerText = `(${Math.round(pCarb * 100)}% - ${Math.round(kcalCarb)} kcal)`;
-
             document.getElementById('macro-gras-gramos').innerText = `${Math.round(kcalGras / 9)} g`;
             document.getElementById('macro-gras-kcal').innerText = `(${Math.round(pGras * 100)}% - ${Math.round(kcalGras)} kcal)`;
-
-            const aguaLitros = (pesoGlobal * 0.035).toFixed(1);
-            document.getElementById('info-agua').innerText = `Consumo hídrico mínimo recomendado: ~${aguaLitros} a ${(parseFloat(aguaLitros)+0.5).toFixed(1)} litros diarios.`;
         }
 
         function actualizarMetaPorObjetivo() {
@@ -496,22 +483,324 @@
             } else if(objetivo === 'volumen') {
                 document.getElementById('plan-meta-kcal').value = Math.round(metaCaloriasGlobal * 1.15);
             }
-            actualizarPlanificador();
+            actualizarPlanificadorInfo();
         }
 
-        function actualizarPlanificador() {
+        function actualizarPlanificadorInfo() {
             const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
             const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
             const kcalPorComida = Math.round(metaKcal / numComidas);
+            document.getElementById('info-porcion-comida').innerText = `Exactamente ~${kcalPorComida} kcal por cada una de las ${numComidas} ingestas (Total diario: ${metaKcal} kcal).`;
+        }
 
-            document.getElementById('info-porcion-comida').innerText = `Exactamente ${kcalPorComida} kcal por cada una de las ${numComidas} ingestas (Total diario: ${metaKcal} kcal).`;
-
-            const contenedor = document.getElementById('contenedor-sugeridos');
+        function actualizarRestriccionesPlanUI() {
+            const contenedor = document.getElementById('contenedor-restricciones-plan');
             contenedor.innerHTML = '';
+
+            alimentos.forEach(item => {
+                const estaRestringido = restricciones.includes(item.nombre);
+                let label = document.createElement('label');
+                label.className = "flex items-center space-x-2 text-xs cursor-pointer p-1.5 hover:bg-slate-800 rounded";
+                label.innerHTML = `
+                    <input type="checkbox" ${estaRestringido ? 'checked' : ''} onchange="toggleRestriccion('${item.nombre.replace(/'/g, "\\'")}')" class="rounded bg-slate-900 border-slate-700 text-emerald-600 focus:ring-0">
+                    <span class="${estaRestringido ? 'line-through text-slate-500' : 'text-slate-300'} truncate">${item.nombre}</span>
+                `;
+                contenedor.appendChild(label);
+            });
+        }
+
+        function toggleRestriccion(nombreAlimento) {
+            if (restricciones.includes(nombreAlimento)) {
+                restricciones = restricciones.filter(n => n !== nombreAlimento);
+            } else {
+                restricciones.push(nombreAlimento);
+            }
+            localStorage.setItem('calcuplan_restricciones', JSON.stringify(restricciones));
+            actualizarRestriccionesPlanUI();
+            actualizarSelectAlimentosDiario();
+        }
+
+        function generarMenuSemanalInteligente() {
+            const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
+            const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
+            const tipoDieta = document.getElementById('plan-tipo-dieta').value;
+            let aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
+
+            if (tipoDieta === 'vegetariana') {
+                aptos = aptos.filter(i => !i.nombre.toLowerCase().includes("pollo") && !i.nombre.toLowerCase().includes("vacuno") && !i.nombre.toLowerCase().includes("merluza") && !i.nombre.toLowerCase().includes("atún"));
+            } else if (tipoDieta === 'lowcarb') {
+                aptos = aptos.filter(i => i.categoria !== 'carbo' || i.nombre.toLowerCase().includes('lentejas'));
+            }
+
+            if (aptos.length === 0) {
+                alert("No hay suficientes alimentos disponibles debido a las restricciones actuales.");
+                return;
+            }
+
+            const desayunoPool = aptos.filter(i => i.categoria === 'desayuno' || i.categoria === 'lacteo' || i.categoria === 'fruta');
+            const proteinaPool = aptos.filter(i => i.categoria === 'proteina');
+            const carboPool = aptos.filter(i => i.categoria === 'carbo');
+            const vegetalPool = aptos.filter(i => i.categoria === 'vegetal');
+
+            const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
+            menuSemanalCache = [];
+            const kcalPorComida = metaKcal / numComidas;
+
+            diasSemana.forEach(dia => {
+                let comisionesDia = [];
+                for (let i = 0; i < numComidas; i++) {
+                    let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
+                    let itemsComida = [];
+                    let acumuladoKcal = 0;
+                    const esDesayunoMerienda = (nombreComida.includes("Desayuno") || nombreComida.includes("Merienda") || nombreComida.includes("Media"));
+
+                    if (esDesayunoMerienda && desayunoPool.length > 0) {
+                        let item1 = desayunoPool[Math.floor(Math.random() * desayunoPool.length)];
+                        let item2 = desayunoPool.filter(x => x.nombre !== item1.nombre);
+                        item2 = item2.length > 0 ? item2[Math.floor(Math.random() * item2.length)] : item1;
+
+                        let cant1 = Math.round(((kcalPorComida * 0.55) / item1.kcal) * 100);
+                        let cant2 = Math.round(((kcalPorComida * 0.45) / item2.kcal) * 100);
+                        if(cant1 < 25) cant1 = 40;
+                        if(cant2 < 25) cant2 = 40;
+
+                        itemsComida.push({ alimento: item1.nombre, cantidad: cant1 });
+                        itemsComida.push({ alimento: item2.nombre, cantidad: cant2 });
+                    } else {
+                        let protItem = proteinaPool.length > 0 ? proteinaPool[Math.floor(Math.random() * proteinaPool.length)] : aptos[0];
+                        let cantProt = Math.round(((kcalPorComida * 0.45) / protItem.kcal) * 100);
+                        if(cantProt < 50) cantProt = 120;
+                        itemsComida.push({ alimento: protItem.nombre, cantidad: cantProt });
+                        acumuladoKcal += (protItem.kcal * (cantProt / 100));
+
+                        let remanente = kcalPorComida - acumuladoKcal;
+                        if (remanente > 50 && tipoDieta !== 'lowcarb' && carboPool.length > 0) {
+                            let carbItem = carboPool[Math.floor(Math.random() * carboPool.length)];
+                            let cantCarb = Math.round(((remanente * 0.70) / carbItem.kcal) * 100);
+                            if(cantCarb < 40) cantCarb = 80;
+                            itemsComida.push({ alimento: carbItem.nombre, cantidad: cantCarb });
+                            acumuladoKcal += (carbItem.kcal * (cantCarb / 100));
+                        }
+
+                        let remanenteVeg = kcalPorComida - acumuladoKcal;
+                        if (remanenteVeg > 10 && vegetalPool.length > 0) {
+                            let vegItem = vegetalPool[Math.floor(Math.random() * vegetalPool.length)];
+                            let cantVeg = Math.round((remanenteVeg / vegItem.kcal) * 100);
+                            if(cantVeg < 50) cantVeg = 100;
+                            itemsComida.push({ alimento: vegItem.nombre, cantidad: cantVeg });
+                        }
+                    }
+
+                    comisionesDia.push({
+                        comida: nombreComida,
+                        items: itemsComida
+                    });
+                }
+                menuSemanalCache.push({ dia, comidas: comisionesDia });
+            });
+
+            localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
+            diaActivoIndex = 0;
+            renderMenuSemanalUI();
+            alert("¡Menú semanal de Lunes a Domingo generado con éxito!");
+        }
+
+        function renderMenuSemanalUI() {
+            if (menuSemanalCache.length === 0) return;
+
+            const contenedorTabs = document.getElementById('dias-tabs');
+            contenedorTabs.innerHTML = '';
+
+            diasSemana.forEach((dia, index) => {
+                let btn = document.createElement('button');
+                btn.className = `px-3 py-1.5 text-xs font-semibold rounded-lg transition ${diaActivoIndex === index ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`;
+                btn.innerText = dia;
+                btn.onclick = () => { diaActivoIndex = index; renderMenuSemanalUI(); };
+                contenedorTabs.appendChild(btn);
+            });
+
+            const contenidoDia = document.getElementById('dia-activo-contenido');
+            contenidoDia.innerHTML = '';
+
+            let diaActual = menuSemanalCache[diaActivoIndex];
+            let cardDia = document.createElement('div');
+            cardDia.className = "space-y-4";
+
+            let htmlComidas = '';
+            diaActual.comidas.forEach((bloque, bIndex) => {
+                let htmlItems = '';
+                let totalKcalPlato = 0;
+
+                bloque.items.forEach((it, iIndex) => {
+                    let objAlimento = alimentos.find(a => a.nombre === it.alimento) || alimentos[0];
+                    let factor = it.cantidad / 100;
+                    let kcal = Math.round(objAlimento.kcal * factor);
+                    totalKcalPlato += kcal;
+
+                    // Opciones de alimentos aptos para el selector de personalización
+                    let opcionesSelect = '';
+                    alimentos.filter(a => !restricciones.includes(a.nombre)).forEach(a => {
+                        opcionesSelect += `<option value="${a.nombre}" ${a.nombre === it.alimento ? 'selected' : ''}>${a.nombre}</option>`;
+                    });
+
+                    htmlItems += `
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-slate-800/60 gap-2">
+                            <div class="flex items-center space-x-2 w-full sm:w-64">
+                                <select onchange="cambiarAlimentoItem(${diaActivoIndex}, ${bIndex}, ${iIndex}, this.value)" class="bg-slate-800 border border-slate-700 rounded p-1 text-xs text-slate-200 w-full truncate">
+                                    ${opcionesSelect}
+                                </select>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-1">
+                                    <input type="number" value="${it.cantidad}" min="1" onchange="cambiarCantidadItem(${diaActivoIndex}, ${bIndex}, ${iIndex}, this.value)" class="w-16 bg-slate-800 border border-slate-700 rounded p-1 text-center font-bold text-emerald-400 text-xs">
+                                    <span class="text-slate-400 text-[10px]">g/ml</span>
+                                </div>
+                                <span class="text-emerald-400 font-bold w-16 text-right text-xs">${kcal} kcal</span>
+                                <button onclick="eliminarItemMenu(${diaActivoIndex}, ${bIndex}, ${iIndex})" class="text-rose-500 hover:text-rose-400 font-bold px-1.5 text-sm" title="Eliminar ítem">✕</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                htmlComidas += `
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="font-bold text-emerald-400 text-xs uppercase tracking-wide">📌 ${bloque.comida}</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-slate-400 text-xs font-semibold">Total: <span class="text-slate-200">${totalKcalPlato}</span> kcal</span>
+                                <button onclick="agregarItemMenu(${diaActivoIndex}, ${bIndex})" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[11px] font-semibold px-2.5 py-1 rounded border border-slate-700 transition">+ Añadir Ítem</button>
+                            </div>
+                        </div>
+                        <div class="space-y-1">${htmlItems}</div>
+                    </div>
+                `;
+            });
+
+            cardDia.innerHTML = htmlComidas;
+            contenidoDia.appendChild(cardDia);
+            document.getElementById('contenedor-menu-semanal').classList.remove('hidden');
+        }
+
+        function cambiarAlimentoItem(dIndex, bIndex, iIndex, nuevoNombre) {
+            menuSemanalCache[dIndex].comidas[bIndex].items[iIndex].alimento = nuevoNombre;
+            localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
+            renderMenuSemanalUI();
+        }
+
+        function cambiarCantidadItem(dIndex, bIndex, iIndex, nuevaCantidad) {
+            let cantidad = parseFloat(nuevaCantidad);
+            if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
+            menuSemanalCache[dIndex].comidas[bIndex].items[iIndex].cantidad = cantidad;
+            localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
+            renderMenuSemanalUI();
+        }
+
+        function eliminarItemMenu(dIndex, bIndex, iIndex) {
+            menuSemanalCache[dIndex].comidas[bIndex].items.splice(iIndex, 1);
+            localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
+            renderMenuSemanalUI();
+        }
+
+        function agregarItemMenu(dIndex, bIndex) {
+            let aptos = alimentos.filter(a => !restricciones.includes(a.nombre));
+            if(aptos.length === 0) return;
+            menuSemanalCache[dIndex].comidas[bIndex].items.push({ alimento: aptos[0].nombre, cantidad: 100 });
+            localStorage.setItem('calcuplan_menu_semanal', JSON.stringify(menuSemanalCache));
+            renderMenuSemanalUI();
+        }
+
+        function cargarMenuSemanalAlDiario() {
+            if (menuSemanalCache.length === 0) return;
+            let diaActual = menuSemanalCache[diaActivoIndex];
             
-            const alimentosAptos = alimentos.filter(item => !restricciones.includes(item.nombre));
-            
-            alimentosAptos.forEach(item => {
+            diaActual.comidas.forEach(bloque => {
+                bloque.items.forEach(it => {
+                    let objAlimento = alimentos.find(a => a.nombre === it.alimento) || alimentos[0];
+                    let factor = it.cantidad / 100;
+                    diario.push({
+                        momento: bloque.comida,
+                        nombre: objAlimento.nombre,
+                        cantidad: it.cantidad,
+                        kcal: Math.round(objAlimento.kcal * factor),
+                        prot: +(objAlimento.prot * factor).toFixed(1),
+                        carb: +(objAlimento.carb * factor).toFixed(1),
+                        gras: +(objAlimento.gras * factor).toFixed(1)
+                    });
+                });
+            });
+
+            localStorage.setItem('calcuplan_diario', JSON.stringify(diario));
+            renderDiario();
+            alert(`¡Menú del día (${diaActual.dia}) cargado con éxito a tu Diario Nutricional!`);
+            switchTab('menu');
+        }
+
+        function actualizarReporteUI() {
+            document.getElementById('rep-meta-kcal').innerText = `${metaCaloriasGlobal} kcal`;
+            document.getElementById('rep-peso').innerText = `${pesoGlobal} kg`;
+            document.getElementById('rep-fecha').innerText = fechaStr;
+
+            const contenedor = document.getElementById('rep-lista-menu-semanal');
+            contenedor.innerHTML = '';
+
+            if (menuSemanalCache.length === 0) {
+                contenedor.innerHTML = `<p class="text-slate-500 italic">No hay un menú semanal generado. Ve a la pestaña "2. Plan & Menú Semanal" y genera el plan.</p>`;
+                return;
+            }
+
+            menuSemanalCache.forEach(diaObj => {
+                let divDia = document.createElement('div');
+                divDia.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 print-bg-white";
+                
+                let htmlComidas = '';
+                diaObj.comidas.forEach(bloque => {
+                    let htmlItems = '';
+                    let totalPlato = 0;
+                    bloque.items.forEach(it => {
+                        let objAlimento = alimentos.find(a => a.nombre === it.alimento) || alimentos[0];
+                        let factor = it.cantidad / 100;
+                        let kcal = Math.round(objAlimento.kcal * factor);
+                        totalPlato += kcal;
+                        htmlItems += `<div class="flex justify-between text-slate-300 text-xs py-0.5 border-b border-slate-800/40"><span>• ${objAlimento.nombre} (${it.cantidad}g)</span><span class="font-bold text-emerald-400">${kcal} kcal</span></div>`;
+                    });
+
+                    htmlComidas += `
+                        <div class="space-y-1">
+                            <div class="flex justify-between font-bold text-emerald-300 text-xs">
+                                <span>${bloque.comida}</span>
+                                <span>Total: ${totalPlato} kcal</span>
+                            </div>
+                            ${htmlItems}
+                        </div>
+                    `;
+                });
+
+                divDia.innerHTML = `
+                    <h4 class="font-bold text-sm text-emerald-400 border-b border-slate-700 pb-1.5">📅 ${diaObj.dia}</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">${htmlComidas}</div>
+                `;
+                contenedor.appendChild(divDia);
+            });
+        }
+
+        function actualizarSelectAlimentosDiario() {
+            const select = document.getElementById('log-alimento');
+            if(!select) return;
+            select.innerHTML = '';
+            const aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
+            aptos.forEach(item => {
+                let opt = document.createElement('option');
+                opt.value = item.nombre;
+                opt.text = `${item.nombre} (${item.kcal} kcal / 100g)`;
+                select.appendChild(opt);
+            });
+        }
+
+        function actualizarBaseAlimentosUI() {
+            const contenedor = document.getElementById('contenedor-sugeridos');
+            if(!contenedor) return;
+            contenedor.innerHTML = '';
+            alimentos.forEach(item => {
                 let div = document.createElement('div');
                 div.className = "bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center";
                 div.innerHTML = `
@@ -527,241 +816,6 @@
                 `;
                 contenedor.appendChild(div);
             });
-        }
-
-        function generarMenuFactible() {
-            const numComidas = parseInt(document.getElementById('plan-num-comidas').value);
-            const metaKcal = parseFloat(document.getElementById('plan-meta-kcal').value) || 2000;
-            const tipoDieta = document.getElementById('plan-tipo-dieta').value;
-            let aptos = alimentos.filter(item => !restricciones.includes(item.nombre));
-
-            if (tipoDieta === 'vegetariana') {
-                aptos = aptos.filter(i => !i.nombre.toLowerCase().includes("pollo") && !i.nombre.toLowerCase().includes("vacuno") && !i.nombre.toLowerCase().includes("merluza") && !i.nombre.toLowerCase().includes("atún"));
-            } else if (tipoDieta === 'lowcarb') {
-                aptos = aptos.filter(i => i.categoria !== 'carbo' || i.nombre.toLowerCase().includes('lentejas'));
-            }
-
-            const desayunoPool = aptos.filter(i => i.categoria === 'desayuno' || i.categoria === 'lacteo' || i.categoria === 'fruta');
-            const proteinaPool = aptos.filter(i => i.categoria === 'proteina');
-            const carboPool = aptos.filter(i => i.categoria === 'carbo');
-            const vegetalPool = aptos.filter(i => i.categoria === 'vegetal');
-
-            const nombresComidas = ["Desayuno", "Media Mañana", "Almuerzo", "Merienda", "Cena", "Colación Nocturna"];
-            menuGeneradoCache = [];
-            const kcalPorComida = metaKcal / numComidas;
-
-            for (let i = 0; i < numComidas; i++) {
-                let nombreComida = nombresComidas[i] || `Comida ${i+1}`;
-                let itemsComida = [];
-                let acumuladoKcal = 0;
-
-                // Criterio factible: Desayuno/Merienda usa lácteos/pan/avena/fruta. Almuerzo/Cena usa proteína + carbo + vegetal.
-                const esDesayunoMerienda = (nombreComida.includes("Desayuno") || nombreComida.includes("Merienda") || nombreComida.includes("Media"));
-
-                if (esDesayunoMerienda && desayunoPool.length > 0) {
-                    // Seleccionar 2 ítems lógicos (ej: Pan o Avena + Lácteo o Fruta)
-                    let item1 = desayunoPool[Math.floor(Math.random() * desayunoPool.length)];
-                    let item2 = desayunoPool.filter(x => x.nombre !== item1.nombre);
-                    item2 = item2.length > 0 ? item2[Math.floor(Math.random() * item2.length)] : item1;
-
-                    // Distribuir calorías 50/50 o 60/40
-                    let target1 = kcalPorComida * 0.55;
-                    let target2 = kcalPorComida * 0.45;
-
-                    let cant1 = Math.round((target1 / item1.kcal) * 100);
-                    let cant2 = Math.round((target2 / item2.kcal) * 100);
-                    if(cant1 < 20) cant1 = 30;
-                    if(cant2 < 20) cant2 = 30;
-
-                    itemsComida.push({ alimento: item1, cantidad: cant1 });
-                    itemsComida.push({ alimento: item2, cantidad: cant2 });
-                } else {
-                    // Almuerzo / Cena / Colación fuerte: Proteína + Carbo + Vegetal
-                    let protItem = proteinaPool.length > 0 ? proteinaPool[Math.floor(Math.random() * proteinaPool.length)] : aptos[0];
-                    let targetProtKcal = kcalPorComida * 0.45;
-                    let cantProt = Math.round((targetProtKcal / protItem.kcal) * 100);
-                    if(cantProt < 50) cantProt = 100;
-                    itemsComida.push({ alimento: protItem, cantidad: cantProt });
-                    acumuladoKcal += (protItem.kcal * (cantProt / 100));
-
-                    let remanente = kcalPorComida - acumuladoKcal;
-                    if (remanente > 50 && tipoDieta !== 'lowcarb' && carboPool.length > 0) {
-                        let carbItem = carboPool[Math.floor(Math.random() * carboPool.length)];
-                        let targetCarbKcal = remanente * 0.70;
-                        let cantCarb = Math.round((targetCarbKcal / carbItem.kcal) * 100);
-                        if(cantCarb < 40) cantCarb = 60;
-                        itemsComida.push({ alimento: carbItem, cantidad: cantCarb });
-                        acumuladoKcal += (carbItem.kcal * (cantCarb / 100));
-                    }
-
-                    let remanenteVeg = kcalPorComida - acumuladoKcal;
-                    if (remanenteVeg > 10 && vegetalPool.length > 0) {
-                        let vegItem = vegetalPool[Math.floor(Math.random() * vegetalPool.length)];
-                        let cantVeg = Math.round((remanenteVeg / vegItem.kcal) * 100);
-                        if(cantVeg < 50) cantVeg = 100;
-                        itemsComida.push({ alimento: vegItem, cantidad: cantVeg });
-                    }
-                }
-
-                menuGeneradoCache.push({
-                    comida: nombreComida,
-                    items: itemsComida
-                });
-            }
-
-            renderMenuAutomaticoUI();
-        }
-
-        function renderMenuAutomaticoUI() {
-            const contenedor = document.getElementById('contenedor-menu-auto');
-            const lista = document.getElementById('lista-menu-auto');
-            lista.innerHTML = '';
-
-            menuGeneradoCache.forEach((bloque, bIndex) => {
-                let card = document.createElement('div');
-                card.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs space-y-3";
-                
-                let htmlItems = '';
-                let totalKcalPlato = 0;
-
-                bloque.items.forEach((it, iIndex) => {
-                    let factor = it.cantidad / 100;
-                    let kcal = Math.round(it.alimento.kcal * factor);
-                    totalKcalPlato += kcal;
-
-                    htmlItems += `
-                        <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60 gap-2">
-                            <span class="text-slate-300 font-medium truncate w-36 sm:w-44">${it.alimento.nombre}</span>
-                            <div class="flex items-center space-x-1">
-                                <input type="number" value="${it.cantidad}" min="1" onchange="actualizarCantidadItem(${bIndex}, ${iIndex}, this.value)" class="w-14 bg-slate-800 border border-slate-700 rounded p-1 text-center font-bold text-emerald-400">
-                                <span class="text-slate-400 text-[10px]">g/ml</span>
-                            </div>
-                            <span class="text-emerald-400 font-bold w-14 text-right">${kcal} kcal</span>
-                        </div>
-                    `;
-                });
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-emerald-400 tracking-wide uppercase text-[11px]">📌 ${bloque.comida}</span>
-                        <span class="text-slate-400 font-semibold">Total Ingesta: <span class="text-slate-200">${totalKcalPlato}</span> kcal</span>
-                    </div>
-                    <div class="space-y-1">${htmlItems}</div>
-                `;
-                lista.appendChild(card);
-            });
-
-            contenedor.classList.remove('hidden');
-        }
-
-        function actualizarCantidadItem(bIndex, iIndex, nuevaCantidad) {
-            let cantidad = parseFloat(nuevaCantidad);
-            if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
-            menuGeneradoCache[bIndex].items[iIndex].cantidad = cantidad;
-            renderMenuAutomaticoUI();
-        }
-
-        function cargarMenuAutoAlDiario() {
-            if (menuGeneradoCache.length === 0) return;
-
-            menuGeneradoCache.forEach(bloque => {
-                bloque.items.forEach(it => {
-                    let factor = it.cantidad / 100;
-                    const itemDiario = {
-                        momento: bloque.comida,
-                        nombre: it.alimento.nombre,
-                        cantidad: it.cantidad,
-                        kcal: Math.round(it.alimento.kcal * factor),
-                        prot: +(it.alimento.prot * factor).toFixed(1),
-                        carb: +(it.alimento.carb * factor).toFixed(1),
-                        gras: +(it.alimento.gras * factor).toFixed(1)
-                    };
-                    diario.push(itemDiario);
-                });
-            });
-
-            localStorage.setItem('calcuplan_diario', JSON.stringify(diario));
-            renderDiario();
-            alert("¡Menú inteligente cargado con éxito a tu Diario Nutricional!");
-            switchTab('menu');
-        }
-
-        function actualizarReporteUI() {
-            document.getElementById('rep-meta-kcal').innerText = `${metaCaloriasGlobal} kcal`;
-            document.getElementById('rep-peso').innerText = `${pesoGlobal} kg`;
-            document.getElementById('rep-fecha').innerText = fechaStr;
-
-            const contenedor = document.getElementById('rep-lista-menu');
-            contenedor.innerHTML = '';
-
-            if (menuGeneradoCache.length === 0) {
-                contenedor.innerHTML = `<p class="text-slate-500 italic">No hay un menú generado actualmente. Ve a la pestaña "2. Plan & Menú Inteligente" y haz clic en "Generar Menú".</p>`;
-                return;
-            }
-
-            menuGeneradoCache.forEach(bloque => {
-                let div = document.createElement('div');
-                div.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2";
-                
-                let htmlItems = '';
-                let totalPlato = 0;
-                bloque.items.forEach(it => {
-                    let factor = it.cantidad / 100;
-                    let kcal = Math.round(it.alimento.kcal * factor);
-                    totalPlato += kcal;
-                    htmlItems += `<div class="flex justify-between text-slate-300 py-0.5 border-b border-slate-800/40"><span>• ${it.alimento.nombre} (${it.cantidad}g)</span><span class="font-bold text-emerald-400">${kcal} kcal</span></div>`;
-                });
-
-                div.innerHTML = `
-                    <div class="flex justify-between font-bold text-emerald-300 border-b border-slate-700 pb-1">
-                        <span>${bloque.comida}</span>
-                        <span>Total: ${totalPlato} kcal</span>
-                    </div>
-                    <div class="space-y-1">${htmlItems}</div>
-                `;
-                contenedor.appendChild(div);
-            });
-        }
-
-        function actualizarSelectAlimentos() {
-            const select = document.getElementById('log-alimento');
-            select.innerHTML = '';
-            const alimentosAptos = alimentos.filter(item => !restricciones.includes(item.nombre));
-            
-            alimentosAptos.forEach((item) => {
-                let opt = document.createElement('option');
-                opt.value = item.nombre;
-                opt.text = `${item.nombre} (${item.kcal} kcal / 100g)`;
-                select.appendChild(opt);
-            });
-        }
-
-        function actualizarRestriccionesUI() {
-            const contenedor = document.getElementById('contenedor-restricciones');
-            contenedor.innerHTML = '';
-
-            alimentos.forEach(item => {
-                const estaRestringido = restricciones.includes(item.nombre);
-                let label = document.createElement('label');
-                label.className = "flex items-center space-x-2 text-xs cursor-pointer p-1.5 hover:bg-slate-800/50 rounded";
-                label.innerHTML = `
-                    <input type="checkbox" ${estaRestringido ? 'checked' : ''} onchange="toggleRestriccion('${item.nombre.replace(/'/g, "\\'")}')" class="rounded bg-slate-900 border-slate-700 text-emerald-600 focus:ring-0">
-                    <span class="${estaRestringido ? 'line-through text-slate-500' : 'text-slate-300'}">${item.nombre}</span>
-                `;
-                contenedor.appendChild(label);
-            });
-        }
-
-        function toggleRestriccion(nombreAlimento) {
-            if (restricciones.includes(nombreAlimento)) {
-                restricciones = restricciones.filter(n => n !== nombreAlimento);
-            } else {
-                restricciones.push(nombreAlimento);
-            }
-            localStorage.setItem('calcuplan_restricciones', JSON.stringify(restricciones));
-            actualizarRestriccionesUI();
-            actualizarSelectAlimentos();
-            actualizarPlanificador();
         }
 
         function guardarNuevoAlimento() {
@@ -785,8 +839,9 @@
             document.getElementById('nuevo-carb').value = '';
             document.getElementById('nuevo-gras').value = '';
 
-            actualizarSelectAlimentos();
-            actualizarRestriccionesUI();
+            actualizarBaseAlimentosUI();
+            actualizarRestriccionesPlanUI();
+            actualizarSelectAlimentosDiario();
             alert("¡Alimento guardado con éxito!");
         }
 
@@ -803,7 +858,7 @@
             const alimentoSeleccionado = alimentos.find(i => i.nombre === nombreAlimento);
             const factor = cantidad / 100;
 
-            const itemDiario = {
+            diario.push({
                 momento,
                 nombre: alimentoSeleccionado.nombre,
                 cantidad,
@@ -811,9 +866,8 @@
                 prot: +(alimentoSeleccionado.prot * factor).toFixed(1),
                 carb: +(alimentoSeleccionado.carb * factor).toFixed(1),
                 gras: +(alimentoSeleccionado.gras * factor).toFixed(1)
-            };
+            });
 
-            diario.push(itemDiario);
             localStorage.setItem('calcuplan_diario', JSON.stringify(diario));
             renderDiario();
         }
@@ -834,6 +888,7 @@
 
         function renderDiario() {
             const contenedor = document.getElementById('lista-diario');
+            if(!contenedor) return;
             contenedor.innerHTML = '';
 
             let totalKcal = 0, totalProt = 0, totalCarb = 0, totalGras = 0;
@@ -874,9 +929,9 @@
         }
 
         // Inicializar app
-        actualizarSelectAlimentos();
-        actualizarRestriccionesUI();
-        actualizarPlanificador();
+        actualizarSelectAlimentosDiario();
+        actualizarRestriccionesPlanUI();
+        actualizarPlanificadorInfo();
         renderDiario();
     </script>
 </body>
